@@ -1,0 +1,76 @@
+from datetime import date
+from db import mongo
+from flask import jsonify, request
+
+def RequestRiwayat(current_user):
+    # Mengambil seluruh riwayat latihan dari pengguna yang login
+    riwayat_data = mongo.db.riwayat.find({'user_id': current_user['_id']})  
+
+    riwayat_list = []
+
+    for riwayat in riwayat_data:
+        riwayat_list.append({
+            "id": str(riwayat['_id']),
+            "date": riwayat['date'],
+            "tari_name": riwayat['tari_name'],
+            "score": riwayat['score']  # Menampilkan skor gabungan
+        })
+
+    return jsonify({
+        "status": "Berhasil",
+        "message": "Data riwayat berhasil diambil",
+        "data": riwayat_list
+    }), 200
+
+
+# --------------------------- Belum dipakai -------------
+def add_riwayat(current_user):
+    data = request.get_json()
+    date = data.get('date')  
+    tari_name = data.get('tari_name') 
+    score = data.get('score')
+    
+    if not date or not tari_name or score is None:
+        return jsonify({'status': 'gagal', 'pesan': 'Semua field wajib diisi'}), 400
+
+    # Menyimpan data riwayat ke MongoDB
+    riwayat = {
+        'user_id': current_user['_id'],  # ID pengguna yang sedang login
+        'date': date,
+        'tari_name': tari_name,
+        'score': score  # Menyimpan skor gabungan
+    }
+
+    result = mongo.db.riwayat.insert_one(riwayat)
+
+    return jsonify({
+        'status': 'sukses',
+        'pesan': 'Riwayat latihan berhasil ditambahkan',
+        'data': {
+            'id': str(result.inserted_id),
+            'date': date,
+            'tari_name': tari_name,
+            'score': score
+        }
+    }), 201
+
+
+def RequestByDate(current_user, date):
+    # Mengambil riwayat latihan berdasarkan tanggal dan pengguna yang login
+    riwayat_data = mongo.db.riwayat.find({'user_id': current_user['_id'], 'date': date})
+
+    riwayat_list = []
+
+    for riwayat in riwayat_data:
+        riwayat_list.append({
+            "id": str(riwayat['_id']),
+            "date": riwayat['date'],
+            "tari_name": riwayat['tari_name'],
+            "score": riwayat['score']  # Menampilkan skor gabungan
+        })
+
+    return jsonify({
+        "status": "Berhasil",
+        "message": "Data riwayat berhasil diambil",
+        "data": riwayat_list
+    }), 200

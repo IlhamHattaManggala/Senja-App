@@ -1,6 +1,9 @@
 from flask import request, jsonify
 from db import mongo
 from bson import ObjectId
+from config import ConfigClass
+
+user_collection = mongo.db[ConfigClass.USER_COLLECTION]
 
 def RequestUpdateProfile(current_user):
     update_data = request.get_json()
@@ -16,7 +19,7 @@ def RequestUpdateProfile(current_user):
         return jsonify({'status': 'gagal', 'pesan': 'Minimal satu data harus diupdate'}), 400
 
     # Jika email diubah, cek apakah email sudah digunakan oleh pengguna lain
-    if email and mongo.db.users.find_one({'email': email}):
+    if email and user_collection.find_one({'email': email}):
         return jsonify({'status': 'gagal', 'pesan': 'Email sudah digunakan oleh pengguna lain'}), 409
 
     # Update data yang valid
@@ -31,7 +34,7 @@ def RequestUpdateProfile(current_user):
         update_values['role'] = role  # Pastikan role diupdate dengan benar
 
     # Memperbarui data pengguna di MongoDB
-    mongo.db.users.update_one({'_id': ObjectId(current_user['_id'])}, {'$set': update_values})
+    user_collection.update_one({'_id': ObjectId(current_user['_id'])}, {'$set': update_values})
 
     return jsonify({
         'status': 'sukses',

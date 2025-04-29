@@ -9,9 +9,11 @@ def RequestResetPassword():
     data = request.json
     otp = data.get('otp')
     new_password = data.get('password')
+    resetPass_collection = mongo.db[ConfigClass.RESET_PASSWORD_COLLECTION]
+    user_collection = mongo.db[ConfigClass.USER_COLLECTION]
 
     # Mencari entri OTP di MongoDB
-    reset_entry = mongo.db[ConfigClass.RESET_PASSWORD_COLLECTION].find_one({'token': otp})
+    reset_entry = resetPass_collection.find_one({'token': otp})
     if not reset_entry:
         return jsonify({'message': 'OTP tidak valid!'}), 400
 
@@ -21,19 +23,19 @@ def RequestResetPassword():
 
     try:
         # Mencari pengguna berdasarkan user_id dari entri OTP
-        user = mongo.db[ConfigClass.USER_COLLECTION].find_one({'_id': ObjectId(reset_entry['user_id'])})
+        user = user_collection.find_one({'_id': ObjectId(reset_entry['user_id'])})
         if not user:
             return jsonify({'message': 'Pengguna tidak ditemukan!'}), 404
 
         # Reset password pengguna dengan hash MD5
         new_password_hashed = hashlib.md5(new_password.encode('utf-8')).hexdigest()
-        mongo.db[ConfigClass.USER_COLLECTION].update_one(
+        user_collection.update_one(
             {'_id': ObjectId(reset_entry['user_id'])},
             {'$set': {'password': new_password_hashed}}
         )
 
         # Hapus entri OTP setelah digunakan
-        mongo.db[ConfigClass.RESET_PASSWORD_COLLECTION].delete_one({'token': otp})
+        resetPass_collection.delete_one({'token': otp})
 
         return jsonify({'message': 'Password berhasil direset!'}), 200
 

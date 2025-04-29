@@ -3,11 +3,14 @@ from db import mongo
 from werkzeug.security import generate_password_hash
 from datetime import datetime
 from firebase.firebase_service import FirebaseService
+from config import configClass
 def RequestRegister():
     data = request.get_json()
     name = data.get('name')
     email = data.get('email')
     password = data.get('password')
+    user_collection = configClass.USER_COLLECTION
+    notifikasi_collection = configClass.NOTIFIKASI_COLLECTION
 
     if not name or not email or not password:
         return jsonify({'pesan': 'Semua field wajib diisi'}), 400
@@ -26,7 +29,7 @@ def RequestRegister():
         'avatar': avatar
     }
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    result = mongo.db.users.insert_one(user)
+    result = mongo.db[user_collection].insert_one(user)
     user['_id'] = result.inserted_id
     FirebaseService.send_notification(
         title = "Terima kasih telah mendaftar",
@@ -38,7 +41,7 @@ def RequestRegister():
         }
     )
 
-    mongo.db.notifikasi.insert_one({
+    mongo.db[notifikasi_collection].insert_one({
         'email': email,
         'title': 'Terima kasih telah mendaftar',
         'body': 'Selamat datang di aplikasi kami!, kami senang Anda bergabung. Selamat menggunakan aplikasi kami!',

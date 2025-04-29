@@ -8,9 +8,10 @@ def VerifyPin():
     data = request.json
     email = data.get('email')
     otp = data.get('otp')
+    reset_pass_coll = [ConfigClass.RESET_PASSWORD_COLLECTION]
 
     # Cari entry OTP yang sesuai dengan email
-    reset_entry = mongo.db[ConfigClass.RESET_PASSWORD_COLLECTION].find_one({'token': otp})
+    reset_entry = reset_pass_coll.find_one({'token': otp})
     if not reset_entry:
         return jsonify({'message': 'OTP tidak valid!'}), 400
 

@@ -1,11 +1,15 @@
 from flask import request, jsonify
 from db import mongo
+from config import ConfigClass
+
+tari_collection = mongo.db[ConfigClass.TARI_COLLECTION]
+seniLainnya_collection = mongo.db[ConfigClass.SENI_LAINNYA_COLLECTION]
 
 def RequestBeranda(current_user):
     base_url = request.host_url.rstrip('/') + '/static/img'
 
     # --- Tari Section ---
-    tari_data = mongo.db.tari.find()
+    tari_data = tari_collection.find()
     tari_list = []
 
     for tari in tari_data:
@@ -30,7 +34,7 @@ def RequestBeranda(current_user):
         })
 
     # --- Seni Lainnya Section ---
-    seni_lainnya_data = mongo.db.seni_lainnya.find()
+    seni_lainnya_data = seniLainnya_collection.find()
     seni_lainnya_list = []
 
     for seni in seni_lainnya_data:

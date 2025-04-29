@@ -1,4 +1,8 @@
 from flask import url_for, jsonify
+from db import mongo
+from config import ConfigClass
+
+user_collection = mongo.db[ConfigClass.USER_COLLECTION]
 
 def RequestProfile(current_user):
     print(current_user)  # Debugging untuk verifikasi current_user

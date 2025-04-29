@@ -2,7 +2,11 @@ import datetime
 from bson import ObjectId
 from flask_jwt_extended import get_jwt_identity
 from flask import jsonify, request
+from config import ConfigClass
 from db import mongo
+
+notifikasi_collection = mongo.db[ConfigClass.NOTIFIKASI_COLLECTION]
+user_collection = mongo.db[ConfigClass.USER_COLLECTION]
 
 def buatNotifikasi():
     try:
@@ -19,7 +23,7 @@ def buatNotifikasi():
         user_id = get_jwt_identity()
 
         # Mencari pengguna di database
-        user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+        user = user_collection.find_one({"_id": ObjectId(user_id)})
         if not user:
             return jsonify({"message": "Pengguna tidak ditemukan"}), 404
 
@@ -33,7 +37,7 @@ def buatNotifikasi():
         }
 
         # Menyimpan notifikasi ke dalam database
-        mongo.db.notifikasi.insert_one(notification)
+        notifikasi_collection.insert_one(notification)
 
         return jsonify({"message": "Notifikasi berhasil dibuat"}), 201
 
@@ -44,7 +48,7 @@ def buatNotifikasi():
 def getAllNotifikasi():
     try:
         user_id = get_jwt_identity()  # Ambil ID dari JWT
-        user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+        user = user_collection.find_one({"_id": ObjectId(user_id)})
         if not user:
             return jsonify({"status": "error", "message": "User tidak ditemukan"}), 404
 
@@ -52,7 +56,7 @@ def getAllNotifikasi():
         if not email:
             return jsonify({"status": "error", "message": "Email tidak ditemukan"}), 400
 
-        notifikasi_cursor = mongo.db.notifikasi.find({"email": email})
+        notifikasi_cursor = notifikasi_collection.find({"email": email})
         notifikasi_data = []
         for notif in notifikasi_cursor:
             notif['_id'] = str(notif['_id'])
@@ -68,7 +72,7 @@ def getAllNotifikasi():
         return jsonify({"status": "error", "message": f"Gagal mengambil data notifikasi: {str(e)}"}), 500
 
 def readNotifikasi(notif_id):
-    result = mongo.db.notifikasi.update_one(
+    result = notifikasi_collection.update_one(
         {'_id': ObjectId(notif_id)},
         {'$set': {'isRead': True}}
     )
@@ -77,7 +81,7 @@ def readNotifikasi(notif_id):
     return jsonify({'message': 'Notifikasi ditandai sebagai dibaca'}), 200
 
 def deleteNotifikasi(notif_id):
-    result = mongo.db.notifikasi.delete_one({'_id': ObjectId(notif_id)})
+    result = notifikasi_collection.delete_one({'_id': ObjectId(notif_id)})
     if result.deleted_count == 0:
         return jsonify({'message': 'Notifikasi tidak ditemukan'}), 404
     return jsonify({'message': 'Notifikasi berhasil dihapus'}), 200

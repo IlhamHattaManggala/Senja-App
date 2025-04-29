@@ -4,6 +4,7 @@ from flask import jsonify, request
 
 def RequestRiwayat(current_user):
     # Mengambil seluruh riwayat latihan dari pengguna yang login
+    
     riwayat_data = mongo.db.riwayat.find({'user_id': current_user['_id']})  
 
     riwayat_list = []

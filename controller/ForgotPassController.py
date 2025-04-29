@@ -11,13 +11,15 @@ import random
 mail = Mail()
 
 otp_expiry_time = 300
+resetPass_collection = mongo.db[ConfigClass.RESET_PASSWORD_COLLECTION]
+user_collection = mongo.db[ConfigClass.USER_COLLECTION]
 
 def RequestForgotPassword():
     email = request.json.get('email')
 
     # Cek apakah pengguna dengan email ini ada di MongoDB
     # user = mongo.db.users.find_one({'email': email})
-    user = mongo.db[ConfigClass.USER_COLLECTION].find_one({'email': email})
+    user = user_collection.find_one({'email': email})
     if not user:
         return jsonify({'message': 'Email tidak ditemukan!'}), 404
 
@@ -26,11 +28,11 @@ def RequestForgotPassword():
     otp_expiry = datetime.utcnow() + timedelta(seconds=otp_expiry_time)
 
     # Cek apakah sudah ada entri OTP di koleksi RESET_PASSWORD_COLLECTION untuk pengguna ini
-    existing_entry = mongo.db[ConfigClass.RESET_PASSWORD_COLLECTION].find_one({'user_id': str(user['_id'])})
+    existing_entry = resetPass_collection.find_one({'user_id': str(user['_id'])})
     
     if existing_entry:
         # Update token dan expiry pada entri yang sudah ada
-        mongo.db[ConfigClass.RESET_PASSWORD_COLLECTION].update_one(
+        resetPass_collection.update_one(
             {'user_id': str(user['_id'])},
             {'$set': {'token': otp, 'expiry': otp_expiry}}
         )
@@ -41,7 +43,7 @@ def RequestForgotPassword():
             'token': otp,
             'expiry': otp_expiry
         }
-        mongo.db[ConfigClass.RESET_PASSWORD_COLLECTION].insert_one(otp_entry)
+        resetPass_collection.insert_one(otp_entry)
 
     # Kirim OTP ke email pengguna
     send_otp_email(email, otp)

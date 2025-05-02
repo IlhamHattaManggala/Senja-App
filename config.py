@@ -1,3 +1,4 @@
+
 MONGO_URI = "mongodb://localhost:27017/senja"
 DATABASE_NAME = "senja"
 SECRET_KEY = 'senja-app'
@@ -8,6 +9,15 @@ RESET_PASSWORD_COLLECTION = "reset_password"
 TARI_COLLECTION = "tari"
 SENI_LAINNYA_COLLECTION = "seni_lainnya"
 TARI_ARTICLE_COLLECTION = "tari_article"
+
+# Menambahkan Basic Authentication Users
+BASIC_AUTH_USERS = {
+    "aurapita11@gmail.com": "Aurapita111"  # email dan password untuk login
+}
+
+
+# Menambahkan API Key untuk akses API
+API_KEY = 'your-api-key-here'  # Ganti dengan API Key yang aman dan unik
 
 class ConfigClass:
     SECRET_KEY = SECRET_KEY
@@ -33,5 +43,9 @@ class ConfigClass:
     MAIL_USERNAME = 'your_email@gmail.com'  # Ganti dengan email Anda
     MAIL_PASSWORD = 'your_password'  # Ganti dengan password aplikasi atau password email Anda
     MAIL_DEFAULT_SENDER = 'your_email@gmail.com'  # Email pengirim
+
+    # Menambahkan Basic Authentication dan API Key konfigurasi
+    BASIC_AUTH_USERS = BASIC_AUTH_USERS
+    API_KEY = API_KEY
 
 configClass = ConfigClass()

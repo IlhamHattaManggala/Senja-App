@@ -14,13 +14,14 @@ def RequestBeranda(current_user):
 
     for tari in tari_data:
         gerakan_list = []
-        gerakan_data = mongo.db.gerakan.find({'tari_id': tari['_id']})
+        
 
-        for gerakan in gerakan_data:
+        for gerakan in tari.get('gerakan',[]):
             gerakan_list.append({
                 "name": gerakan['name'],
                 "imageUrl": f"{base_url}/gerakan/{gerakan['imageUrl']}" if 'imageUrl' in gerakan else None
             })
+        print(gerakan_list)
 
         image_url_tari = f"{base_url}/tari/{tari['imageUrl']}" if 'imageUrl' in tari else None
 

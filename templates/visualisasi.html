@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualisasi Data Tari</title>
+</head>
+<body>
+    <h1>Visualisasi Data Tari Tradisional</h1>
+
+    <div>
+        <h2>Jumlah Artikel per Bulan</h2>
+        <img src="{{ url_for('static', filename='img/visualisasi/month_bar.png') }}" alt="Jumlah Artikel per Bulan">
+    </div>
+
+    <div>
+        <h2>Jumlah Artikel Berdasarkan Tanggal</h2>
+        <img src="{{ url_for('static', filename='img/visualisasi/day_line.png') }}" alt="Jumlah Artikel Berdasarkan Tanggal">
+    </div>
+
+    <div>
+        <h2>Tren Jumlah Artikel per Tahun</h2>
+        <img src="{{ url_for('static', filename='img/visualisasi/year_trend.png') }}" alt="Tren Jumlah Artikel per Tahun">
+    </div>
+
+    <div>
+        <h2>Jumlah Artikel Berdasarkan Daerah</h2>
+        <img src="{{ url_for('static', filename='img/visualisasi/region_count.png') }}" alt="Jumlah Artikel Berdasarkan Daerah">
+    </div>
+
+    <div>
+        <h2>Hubungan Antara Daerah dan Jenis Tari</h2>
+        <img src="{{ url_for('static', filename='img/visualisasi/region_dance_type.png') }}" alt="Hubungan Antara Daerah dan Jenis Tari">
+    </div>
+
+</body>
+</html>

@@ -7,6 +7,11 @@ def RequestLogin():
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
+    api_key = request.headers.get('x-api-key')
+    
+    if api_key not in configClass.API_KEY:
+        return jsonify({'pesan': 'API key tidak valid'}), 403
+    
     user_collection = configClass.USER_COLLECTION
     user = mongo.db[user_collection].find_one({'email': email})
     if not user or not check_password_hash(user['password'], password):
@@ -18,7 +23,8 @@ def RequestLogin():
             "name": user['name'],
             "email": user['email'],
             "role": user['role'],
-            "avatar": user['avatar']
+            "avatar": user['avatar'],
+            "password": user['password']
         }
     )
 

@@ -33,20 +33,43 @@ from controller.RegisterController import RequestRegister
 from controller.ResetPassController import RequestResetPassword
 from controller.RiwayatController import RequestByDate, RequestRiwayat, add_riwayat
 from controller.VerifikasiPinController import VerifyPin
-from controller.NotifikasiController import deleteNotifikasi, readNotifikasi, getAllNotifikasi
+from controller.NotifikasiController import deleteNotifikasi, kirim_notifikasi_hari_tari, readNotifikasi, getAllNotifikasi
 from controller.ScrappingController import run_scraping 
 from controller.VisualisasiController import render_visualizations
-
+from controller.ScrappingController import run_scraping  # Ganti dengan nama file scraping kamu
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+import atexit
+from werkzeug.security import check_password_hash
 # Middleware untuk validasi token
 from middleware.token import token_required
 
+# Inisialisasi scheduler
+scheduler = BackgroundScheduler()
+
+# Scheduler untuk Hari Tari Sedunia setiap tahun pada tanggal 29 April, jam 00:00
+# trigger_hari_tari = CronTrigger(month=4, day=29, hour=0, minute=0)  # Setiap tanggal 29 April jam 00:00
+trigger_hari_tari = CronTrigger(month=5, day=4, hour=14, minute=0)  # Setiap tanggal 29 April jam 00:00
+scheduler.add_job(kirim_notifikasi_hari_tari, trigger_hari_tari, id='hari_tari_job', replace_existing=True)
+
+# Scheduler kedua: Menjadwalkan scraping setiap hari jam 1 AM
+trigger_scraping = CronTrigger(hour=1, minute=0)  # Setiap jam 01:00 AM
+scheduler.add_job(run_scraping, trigger_scraping, id='scraping_job', replace_existing=True)
+
+scheduler.start()
+
+# Agar job berhenti dengan rapi saat aplikasi ditutup
+atexit.register(lambda: scheduler.shutdown())
+
 # ---------------------- Basic Authentication ----------------------
+
+user_collection = configClass.USER_COLLECTION
 @auth.verify_password
 def verify_password(email, password):
-    if email in app.config['BASIC_AUTH_USERS'] and app.config['BASIC_AUTH_USERS'][email] == password:
-        return email  # Mengembalikan email jika autentikasi berhasil
-    return None  # Kembalikan None jika gagal
-
+    user = mongo.db[user_collection].find_one({'email': email})
+    if user and check_password_hash(user['password'], password):
+        return user  # Kembalikan objek user agar bisa diakses di route
+    return None
 
 # ---------------------- API Key Middleware ----------------------
 def check_api_key(func):
@@ -79,9 +102,23 @@ def register():
 
 # ---------------------- LOGIN ----------------------
 @app.route('/api/users/v1/login', methods=['POST'])
-#@auth.login_required  # Menambahkan Basic Auth ke endpoint login
 def login():
     return RequestLogin()
+
+# -------------------- LOGIN BASIC AUTH ----------------
+
+@app.route('/api/users/v1/login-basic', methods=['POST'])
+@auth.login_required
+def protected_route():
+    user = auth.current_user()
+    return jsonify({
+        'status': 'success',
+        'message': f"Halo {user['name']}, Anda berhasil mengakses endpoint ini!",
+        'user': {
+            'email': user['email'],
+            'role': user['role']
+        }
+    }), 200
 
 # ---------------------- FORGOT PASSWORD ----------------------
 @app.route('/api/users/v1/forgot-password', methods=['POST'])

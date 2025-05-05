@@ -24,17 +24,20 @@ def get_image_url(article_soup):
 
 # Fungsi untuk melakukan scraping artikel
 def scrape_tari_articles():
-   
     if mongo.db is None:
         print("Koneksi MongoDB gagal!")
         return
 
     tari_article = mongo.db[configClass.TARI_ARTICLE_COLLECTION]
     base_urls = [
-        "https://www.detik.com/search/searchall?query=tari&page=",  # Detik
-        "https://www.kompas.tv/search?q=tari#gsc.tab=0&gsc.q=tari&gsc.page="  # Kompastv
-    ]  
+        "https://www.detik.com/search/searchall?query=tari&page=",
+        "https://www.kompas.tv/search?q=tari#gsc.tab=0&gsc.q=tari&gsc.page="
+    ]
     total_saved = 0
+
+    # Hitung tanggal kemarin
+    yesterday = datetime.date.today() - datetime.timedelta(days=1)
+
     for base_url in base_urls:
         page_num = 1
         while True:
@@ -50,7 +53,7 @@ def scrape_tari_articles():
 
             if not articles:
                 print("Tidak ada artikel lebih lanjut.")
-                break 
+                break
 
             for article in articles:
                 title = article.find('h3')
@@ -58,11 +61,9 @@ def scrape_tari_articles():
                     title_text = title.get_text().strip()
                     link = article.find('a')['href']
 
-                    # Menambahkan pengecekan untuk URL artikel
                     if not link.startswith('http'):
                         link = "https://www.detik.com" + link
 
-                    # Cek duplikat berdasarkan URL
                     if tari_article.find_one({'url': link}):
                         print(f"Artikel sudah ada: {link}")
                         continue
@@ -88,6 +89,11 @@ def scrape_tari_articles():
                         else:
                             article_date = None
 
+                        # Filter hanya artikel dari kemarin
+                        if article_date and article_date != yesterday:
+                            print(f"Artikel bukan dari kemarin, dilewati: {article_date}")
+                            continue
+
                         # Ambil isi artikel
                         content_div = article_soup.find('div', class_='detail__body-text') or article_soup.find('div', class_='detail_text')
                         if content_div:
@@ -97,7 +103,6 @@ def scrape_tari_articles():
 
                         image_url = get_image_url(article_soup)
 
-                        # Menyimpan data ke MongoDB
                         document = {
                             'title': title_text,
                             'url': link,
@@ -113,7 +118,7 @@ def scrape_tari_articles():
                             print(f"Gambar disimpan: {image_url}")
 
             print(f"Total artikel yang berhasil disimpan di halaman {page_num}: {total_saved}")
-            page_num += 1  # Lanjutkan ke halaman berikutnya
+            page_num += 1
 
 # Fungsi untuk menjalankan proses scraping
 def run_scraping():

@@ -15,11 +15,11 @@ def RequestBeranda(current_user):
     for tari in tari_data:
         gerakan_list = []
         
-
         for gerakan in tari.get('gerakan',[]):
             gerakan_list.append({
                 "name": gerakan['name'],
-                "imageUrl": f"{base_url}/gerakan/{gerakan['imageUrl']}" if 'imageUrl' in gerakan else None
+                "imageUrl": f"{base_url}/gerakan/image/{gerakan['imageUrl']}" if 'imageUrl' in gerakan else None,
+                "videoUrl": f"{base_url}/gerakan/video/{gerakan['videoUrl']}" if 'videoUrl' in gerakan else None
             })
         print(gerakan_list)
 
@@ -31,7 +31,7 @@ def RequestBeranda(current_user):
             "description": tari['description'],
             "imageUrl": image_url_tari,
             "asal": tari.get('asal', 'Tidak diketahui'),
-            "gerakan": gerakan_list
+            "gerakanTari": gerakan_list
         })
 
     # --- Seni Lainnya Section ---

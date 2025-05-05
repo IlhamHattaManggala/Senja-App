@@ -1,17 +1,23 @@
 from flask import request, jsonify
 from db import mongo
 from bson import ObjectId
-from config import ConfigClass
+from config import ConfigClass, configClass
+from werkzeug.security import generate_password_hash
 
 user_collection = mongo.db[ConfigClass.USER_COLLECTION]
 
 def RequestUpdateProfile(current_user):
     update_data = request.get_json()
+    api_key = request.headers.get('x-api-key')
+    
+    if api_key not in configClass.API_KEY:
+        return jsonify({'pesan': 'API key tidak valid'}), 403
 
     # Data yang ingin diperbarui
     name = update_data.get('name')
     email = update_data.get('email')
     avatar = update_data.get('avatar')
+    password = update_data.get('password')
     role = update_data.get('role')  # Ambil role baru jika ada, ganti dari 'user' menjadi 'role'
 
     # Validasi bahwa setidaknya satu data perlu diperbarui
@@ -30,19 +36,24 @@ def RequestUpdateProfile(current_user):
         update_values['email'] = email
     if avatar:
         update_values['avatar'] = avatar
+    if password:
+        update_values['password'] = generate_password_hash(password)
     if role:
         update_values['role'] = role  # Pastikan role diupdate dengan benar
 
     # Memperbarui data pengguna di MongoDB
     user_collection.update_one({'_id': ObjectId(current_user['_id'])}, {'$set': update_values})
+    
+    updated_user = user_collection.find_one({'_id': ObjectId(current_user['_id'])})
+
 
     return jsonify({
         'status': 'sukses',
         'pesan': 'Profil berhasil diperbarui',
         'data': {
-            'name': current_user['name'],
-            'email': current_user['email'],
-            'role': role if role else current_user['role'], 
-            'avatar': current_user['avatar']
+            'name': updated_user['name'],
+            'email': updated_user['email'],
+            'role': role if role else updated_user['role'], 
+            'avatar': updated_user['avatar']
         }
     }), 200

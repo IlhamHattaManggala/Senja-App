@@ -6,6 +6,12 @@ tari_collection = mongo.db[ConfigClass.TARI_COLLECTION]
 seniLainnya_collection = mongo.db[ConfigClass.SENI_LAINNYA_COLLECTION]
 
 def RequestBeranda(current_user):
+client_api_key = request.headers.get('X-API-Key')
+    if not client_api_key or client_api_key != ConfigClass.API_KEY:
+        return jsonify({
+            "status": "Gagal",
+            "message": "API Key tidak valid atau tidak disertakan"
+        }), 401
     base_url = request.host_url.rstrip('/') + '/static/img'
 
     # --- Tari Section ---

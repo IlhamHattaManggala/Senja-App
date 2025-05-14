@@ -6,11 +6,19 @@ tari_collection = mongo.db[ConfigClass.TARI_COLLECTION]
 seniLainnya_collection = mongo.db[ConfigClass.SENI_LAINNYA_COLLECTION]
 
 def RequestBeranda(current_user):
+<<<<<<< HEAD
     client_api_key = request.headers.get('x-api-key')
     if not client_api_key or client_api_key != ConfigClass.API_KEY:
         return jsonify({
             "status": "Gagal",
             "message": "API key tidak valid"
+=======
+client_api_key = request.headers.get('X-API-Key')
+    if not client_api_key or client_api_key != ConfigClass.API_KEY:
+        return jsonify({
+            "status": "Gagal",
+            "message": "API Key tidak valid atau tidak disertakan"
+>>>>>>> 1a0098daa81f648d48da525b022c826e9c9e7a3d
         }), 401
     base_url = request.host_url.rstrip('/') + '/static/img'
 
@@ -21,12 +29,16 @@ def RequestBeranda(current_user):
     for tari in tari_data:
         gerakan_list = []
         
-
         for gerakan in tari.get('gerakan',[]):
             gerakan_list.append({
                 "name": gerakan['name'],
+<<<<<<< HEAD
                 "imageUrl": f"{base_url}/gerakan/{gerakan['imageUrl']}" if 'imageUrl' in gerakan else None,
                 "vidioUrl": f"/static/vidio/{gerakan['videoUrl']}" if 'videoUrl' in gerakan else None
+=======
+                "imageUrl": f"{base_url}/gerakan/image/{gerakan['imageUrl']}" if 'imageUrl' in gerakan else None,
+                "videoUrl": f"{base_url}/gerakan/video/{gerakan['videoUrl']}" if 'videoUrl' in gerakan else None
+>>>>>>> 1a0098daa81f648d48da525b022c826e9c9e7a3d
             })
         print(gerakan_list)
 

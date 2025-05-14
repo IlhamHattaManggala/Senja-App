@@ -9,6 +9,12 @@ def RequestRegister():
     name = data.get('name')
     email = data.get('email')
     password = data.get('password')
+    
+    api_key = request.headers.get('x-api-key')
+    
+    if api_key not in configClass.API_KEY:
+        return jsonify({'pesan': 'API key tidak valid'}), 403
+    
     user_collection = configClass.USER_COLLECTION
     notifikasi_collection = configClass.NOTIFIKASI_COLLECTION
 

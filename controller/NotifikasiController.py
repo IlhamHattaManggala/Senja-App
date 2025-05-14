@@ -2,7 +2,7 @@ import datetime
 from bson import ObjectId
 from flask_jwt_extended import get_jwt_identity
 from flask import jsonify, request
-from config import ConfigClass
+from config import ConfigClass, configClass
 from db import mongo
 
 notifikasi_collection = mongo.db[ConfigClass.NOTIFIKASI_COLLECTION]
@@ -14,6 +14,10 @@ def buatNotifikasi():
         data = request.get_json()
         title = data.get('title')
         body = data.get('body')
+        api_key = request.headers.get('x-api-key')
+    
+        if api_key not in configClass.API_KEY:
+            return jsonify({'pesan': 'API key tidak valid'}), 403
 
         # Validasi input
         if not title or not body:
@@ -54,6 +58,10 @@ def getAllNotifikasi():
                 "message": "API key tidak valid"
             }), 401
         user_id = get_jwt_identity()  # Ambil ID dari JWT
+        api_key = request.headers.get('x-api-key')
+    
+        if api_key not in configClass.API_KEY:
+            return jsonify({'pesan': 'API key tidak valid'}), 403
         user = user_collection.find_one({"_id": ObjectId(user_id)})
         if not user:
             return jsonify({"status": "error", "message": "User tidak ditemukan"}), 404
@@ -78,12 +86,20 @@ def getAllNotifikasi():
         return jsonify({"status": "error", "message": f"Gagal mengambil data notifikasi: {str(e)}"}), 500
 
 def readNotifikasi(notif_id):
+<<<<<<< HEAD
     client_api_key = request.headers.get('x-api-key')
     if not client_api_key or client_api_key != ConfigClass.API_KEY:
         return jsonify({
             "status": "Gagal",
             "message": "API key tidak valid"
         }), 401
+=======
+    api_key = request.headers.get('x-api-key')
+    
+    if api_key not in configClass.API_KEY:
+        return jsonify({'pesan': 'API key tidak valid'}), 403
+    
+>>>>>>> 1a0098daa81f648d48da525b022c826e9c9e7a3d
     result = notifikasi_collection.update_one(
         {'_id': ObjectId(notif_id)},
         {'$set': {'isRead': True}}
@@ -93,12 +109,20 @@ def readNotifikasi(notif_id):
     return jsonify({'message': 'Notifikasi ditandai sebagai dibaca'}), 200
 
 def deleteNotifikasi(notif_id):
+<<<<<<< HEAD
     client_api_key = request.headers.get('x-api-key')
     if not client_api_key or client_api_key != ConfigClass.API_KEY:
         return jsonify({
             "status": "Gagal",
             "message": "API key tidak valid"
         }), 401
+=======
+    api_key = request.headers.get('x-api-key')
+    
+    if api_key not in configClass.API_KEY:
+        return jsonify({'pesan': 'API key tidak valid'}), 403
+    
+>>>>>>> 1a0098daa81f648d48da525b022c826e9c9e7a3d
     result = notifikasi_collection.delete_one({'_id': ObjectId(notif_id)})
     if result.deleted_count == 0:
         return jsonify({'message': 'Notifikasi tidak ditemukan'}), 404

@@ -1,4 +1,3 @@
-
 MONGO_URI = "mongodb://localhost:27017/senja"
 DATABASE_NAME = "senja"
 SECRET_KEY = 'senja-app'
@@ -17,7 +16,7 @@ BASIC_AUTH_USERS = {
 
 
 # Menambahkan API Key untuk akses API
-API_KEY = 'your-api-key-here'  # Ganti dengan API Key yang aman dan unik
+API_KEY = 'senjawebdev-12'  # Ganti dengan API Key yang aman dan unik
 
 class ConfigClass:
     SECRET_KEY = SECRET_KEY

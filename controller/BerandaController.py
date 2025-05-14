@@ -6,6 +6,12 @@ tari_collection = mongo.db[ConfigClass.TARI_COLLECTION]
 seniLainnya_collection = mongo.db[ConfigClass.SENI_LAINNYA_COLLECTION]
 
 def RequestBeranda(current_user):
+    client_api_key = request.headers.get('x-api-key')
+    if not client_api_key or client_api_key != ConfigClass.API_KEY:
+        return jsonify({
+            "status": "Gagal",
+            "message": "API key tidak valid"
+        }), 401
     base_url = request.host_url.rstrip('/') + '/static/img'
 
     # --- Tari Section ---
@@ -19,7 +25,8 @@ def RequestBeranda(current_user):
         for gerakan in tari.get('gerakan',[]):
             gerakan_list.append({
                 "name": gerakan['name'],
-                "imageUrl": f"{base_url}/gerakan/{gerakan['imageUrl']}" if 'imageUrl' in gerakan else None
+                "imageUrl": f"{base_url}/gerakan/{gerakan['imageUrl']}" if 'imageUrl' in gerakan else None,
+                "vidioUrl": f"/static/vidio/{gerakan['videoUrl']}" if 'videoUrl' in gerakan else None
             })
         print(gerakan_list)
 
@@ -31,7 +38,7 @@ def RequestBeranda(current_user):
             "description": tari['description'],
             "imageUrl": image_url_tari,
             "asal": tari.get('asal', 'Tidak diketahui'),
-            "gerakan": gerakan_list
+            "gerakanTari": gerakan_list
         })
 
     # --- Seni Lainnya Section ---

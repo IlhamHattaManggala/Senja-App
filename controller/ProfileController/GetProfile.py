@@ -1,10 +1,16 @@
-from flask import url_for, jsonify
+from flask import url_for, jsonify, request
 from db import mongo
 from config import ConfigClass
 
 user_collection = mongo.db[ConfigClass.USER_COLLECTION]
 
 def RequestProfile(current_user):
+    client_api_key = request.headers.get('x-api-key')
+    if not client_api_key or client_api_key != ConfigClass.API_KEY:
+        return jsonify({
+            "status": "Gagal",
+            "message": "API key tidak valid"
+        }), 401
     print(current_user)  # Debugging untuk verifikasi current_user
     avatar_filename = current_user['avatar']
     avatar_url = url_for('static', filename=f'img/avatar/{avatar_filename}', _external=True)

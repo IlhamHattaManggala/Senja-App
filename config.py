@@ -11,7 +11,7 @@ TARI_ARTICLE_COLLECTION = "tari_article"
 
 # Menambahkan Basic Authentication Users
 BASIC_AUTH_USERS = {
-    "aurapita11@gmail.com": "Aurapita111"  # email dan password untuk login
+    "kelompokcapstone123@gmail.com": "kelompokcapstone123"  
 }
 
 

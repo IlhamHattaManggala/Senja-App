@@ -47,6 +47,12 @@ def buatNotifikasi():
 
 def getAllNotifikasi():
     try:
+        client_api_key = request.headers.get('x-api-key')
+        if not client_api_key or client_api_key != ConfigClass.API_KEY:
+            return jsonify({
+                "status": "Gagal",
+                "message": "API key tidak valid"
+            }), 401
         user_id = get_jwt_identity()  # Ambil ID dari JWT
         user = user_collection.find_one({"_id": ObjectId(user_id)})
         if not user:
@@ -72,6 +78,12 @@ def getAllNotifikasi():
         return jsonify({"status": "error", "message": f"Gagal mengambil data notifikasi: {str(e)}"}), 500
 
 def readNotifikasi(notif_id):
+    client_api_key = request.headers.get('x-api-key')
+    if not client_api_key or client_api_key != ConfigClass.API_KEY:
+        return jsonify({
+            "status": "Gagal",
+            "message": "API key tidak valid"
+        }), 401
     result = notifikasi_collection.update_one(
         {'_id': ObjectId(notif_id)},
         {'$set': {'isRead': True}}
@@ -81,7 +93,41 @@ def readNotifikasi(notif_id):
     return jsonify({'message': 'Notifikasi ditandai sebagai dibaca'}), 200
 
 def deleteNotifikasi(notif_id):
+    client_api_key = request.headers.get('x-api-key')
+    if not client_api_key or client_api_key != ConfigClass.API_KEY:
+        return jsonify({
+            "status": "Gagal",
+            "message": "API key tidak valid"
+        }), 401
     result = notifikasi_collection.delete_one({'_id': ObjectId(notif_id)})
     if result.deleted_count == 0:
         return jsonify({'message': 'Notifikasi tidak ditemukan'}), 404
     return jsonify({'message': 'Notifikasi berhasil dihapus'}), 200
+
+def kirim_notifikasi_hari_tari():
+    try:
+        # Data notifikasi
+        title = "Selamat Hari Tari Sedunia!"
+        body = "Hari ini adalah Hari Tari Sedunia. Mari kita rayakan bersama!"
+        
+        # Mengambil semua pengguna yang terdaftar
+        users = user_collection.find()
+        
+        # Loop untuk mengirimkan notifikasi ke setiap pengguna
+        for user in users:
+            user_id = str(user["_id"])  # Ambil ID pengguna
+            notification = {
+                "title": title,
+                "body": body,
+                "isRead": False,  # Menandakan bahwa notifikasi belum dibaca
+                "user_id": ObjectId(user_id),
+                "created_at": datetime.datetime.now()
+            }
+
+            # Menyimpan notifikasi ke dalam database
+            notifikasi_collection.insert_one(notification)
+
+        print("Notifikasi Hari Tari Sedunia berhasil dikirim ke semua pengguna")
+
+    except Exception as e:
+        print(f"Terjadi kesalahan: {str(e)}")

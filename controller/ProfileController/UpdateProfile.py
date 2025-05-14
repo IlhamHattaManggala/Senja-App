@@ -7,6 +7,12 @@ user_collection = mongo.db[ConfigClass.USER_COLLECTION]
 
 def RequestUpdateProfile(current_user):
     update_data = request.get_json()
+    client_api_key = request.headers.get('x-api-key')
+    if not client_api_key or client_api_key != ConfigClass.API_KEY:
+        return jsonify({
+            "status": "Gagal",
+            "message": "API key tidak valid"
+        }), 401
 
     # Data yang ingin diperbarui
     name = update_data.get('name')

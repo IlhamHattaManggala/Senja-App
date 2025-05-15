@@ -48,13 +48,10 @@ from middleware.token import token_required
 scheduler = BackgroundScheduler()
 
 # Scheduler untuk Hari Tari Sedunia setiap tahun pada tanggal 29 April, jam 00:00
-<<<<<<< HEAD
 trigger_hari_tari = CronTrigger(month=4, day=29, hour=0, minute=0)  # Setiap tanggal 29 April jam 00:00
 # trigger_hari_tari = CronTrigger(month=5, day=4, hour=14, minute=0)  # Setiap tanggal 29 April jam 00:00
-=======
 # trigger_hari_tari = CronTrigger(month=4, day=29, hour=0, minute=0)  # Setiap tanggal 29 April jam 00:00
 trigger_hari_tari = CronTrigger(month=5, day=4, hour=14, minute=0)  # Setiap tanggal 29 April jam 00:00
->>>>>>> 1a0098daa81f648d48da525b022c826e9c9e7a3d
 scheduler.add_job(kirim_notifikasi_hari_tari, trigger_hari_tari, id='hari_tari_job', replace_existing=True)
 
 # Scheduler kedua: Menjadwalkan scraping setiap hari jam 1 AM

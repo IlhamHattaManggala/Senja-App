@@ -139,3 +139,4 @@ def kirim_notifikasi_hari_tari():
 
     except Exception as e:
         print(f"Terjadi kesalahan: {str(e)}")
+        return jsonify({"message": f"Terjadi kesalahan: {str(e)}"}), 500

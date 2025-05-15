@@ -5,21 +5,36 @@ from config import ConfigClass
 from datetime import datetime
 
 def VerifyPin():
-    data = request.json
-    email = data.get('email')
-    otp = data.get('otp')
-    reset_pass_coll = [ConfigClass.RESET_PASSWORD_COLLECTION]
+    try:
+        data = request.json
+        email = data.get('email')
+        otp = data.get('otp')
+        client_api_key = request.headers.get('x-api-key')
 
-    # Cari entry OTP yang sesuai dengan email
-    reset_entry = reset_pass_coll.find_one({'token': otp})
-    if not reset_entry:
-        return jsonify({'message': 'OTP tidak valid!'}), 400
+        # Validasi API key
+        if not client_api_key or client_api_key != ConfigClass.API_KEY:
+            return jsonify({
+                "status": "Gagal",
+                "message": "API key tidak valid"
+            }), 401
 
-    # Verifikasi apakah OTP yang dimasukkan sesuai dan masih berlaku
-    if reset_entry['expiry'] < datetime.utcnow():
-        return jsonify({'message': 'OTP sudah kadaluarsa!'}), 400
+        # Validasi input
+        if not email or not otp:
+            return jsonify({'message': 'Email dan OTP harus diisi!'}), 400
 
-    if reset_entry.token == otp:
+        reset_pass_coll = mongo.db[ConfigClass.RESET_PASSWORD_COLLECTION]
+
+        # Cari entry OTP yang sesuai dengan token
+        reset_entry = reset_pass_coll.find_one({'token': otp})
+        if not reset_entry:
+            return jsonify({'message': 'OTP tidak valid!'}), 405
+
+        # Verifikasi apakah OTP masih berlaku
+        if reset_entry['expiry'] < datetime.utcnow():
+            return jsonify({'message': 'OTP sudah kadaluarsa!'}), 403
+
+        # Jika valid
         return jsonify({'message': 'OTP valid! Silakan lanjutkan dengan reset password.'}), 200
-    else:
-        return jsonify({'message': 'OTP tidak valid!'}), 400
+
+    except Exception as e:
+        return jsonify({'message': f'Terjadi kesalahan: {str(e)}'}), 500

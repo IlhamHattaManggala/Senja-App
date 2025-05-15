@@ -16,6 +16,12 @@ user_collection = mongo.db[ConfigClass.USER_COLLECTION]
 
 def RequestForgotPassword():
     email = request.json.get('email')
+    client_api_key = request.headers.get('x-api-key')
+    if not client_api_key or client_api_key != ConfigClass.API_KEY:
+        return jsonify({
+            "status": "Gagal",
+            "message": "API key tidak valid"
+        }), 401
 
     # Cek apakah pengguna dengan email ini ada di MongoDB
     # user = mongo.db.users.find_one({'email': email})

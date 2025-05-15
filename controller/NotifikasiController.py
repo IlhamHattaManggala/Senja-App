@@ -86,20 +86,12 @@ def getAllNotifikasi():
         return jsonify({"status": "error", "message": f"Gagal mengambil data notifikasi: {str(e)}"}), 500
 
 def readNotifikasi(notif_id):
-<<<<<<< HEAD
     client_api_key = request.headers.get('x-api-key')
     if not client_api_key or client_api_key != ConfigClass.API_KEY:
         return jsonify({
             "status": "Gagal",
             "message": "API key tidak valid"
         }), 401
-=======
-    api_key = request.headers.get('x-api-key')
-    
-    if api_key not in configClass.API_KEY:
-        return jsonify({'pesan': 'API key tidak valid'}), 403
-    
->>>>>>> 1a0098daa81f648d48da525b022c826e9c9e7a3d
     result = notifikasi_collection.update_one(
         {'_id': ObjectId(notif_id)},
         {'$set': {'isRead': True}}
@@ -109,20 +101,12 @@ def readNotifikasi(notif_id):
     return jsonify({'message': 'Notifikasi ditandai sebagai dibaca'}), 200
 
 def deleteNotifikasi(notif_id):
-<<<<<<< HEAD
     client_api_key = request.headers.get('x-api-key')
     if not client_api_key or client_api_key != ConfigClass.API_KEY:
         return jsonify({
             "status": "Gagal",
             "message": "API key tidak valid"
         }), 401
-=======
-    api_key = request.headers.get('x-api-key')
-    
-    if api_key not in configClass.API_KEY:
-        return jsonify({'pesan': 'API key tidak valid'}), 403
-    
->>>>>>> 1a0098daa81f648d48da525b022c826e9c9e7a3d
     result = notifikasi_collection.delete_one({'_id': ObjectId(notif_id)})
     if result.deleted_count == 0:
         return jsonify({'message': 'Notifikasi tidak ditemukan'}), 404

@@ -39,9 +39,9 @@ class ConfigClass:
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 587
     MAIL_USE_TLS = True
-    MAIL_USERNAME = 'your_email@gmail.com'  # Ganti dengan email Anda
-    MAIL_PASSWORD = 'your_password'  # Ganti dengan password aplikasi atau password email Anda
-    MAIL_DEFAULT_SENDER = 'your_email@gmail.com'  # Email pengirim
+    MAIL_USERNAME = 'ilhamhattamanggala123@gmail.com'  # Ganti dengan email Anda
+    MAIL_PASSWORD = 'nxei sqvz guzs yujp'  # Ganti dengan password aplikasi atau password email Anda
+    MAIL_DEFAULT_SENDER = 'senjaapp@gmail.com'  # Email pengirim
 
     # Menambahkan Basic Authentication dan API Key konfigurasi
     BASIC_AUTH_USERS = BASIC_AUTH_USERS

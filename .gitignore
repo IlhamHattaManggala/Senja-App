@@ -1,1 +1,3 @@
 firebase/data/firebase-adminsdk.json
+__pycache__/
+*.pyc

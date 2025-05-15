@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, Response, render_template, jsonify, request
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required
 from flask_httpauth import HTTPBasicAuth  # Import Flask-HTTPAuth
@@ -51,7 +51,7 @@ scheduler = BackgroundScheduler()
 trigger_hari_tari = CronTrigger(month=4, day=29, hour=0, minute=0)  # Setiap tanggal 29 April jam 00:00
 # trigger_hari_tari = CronTrigger(month=5, day=4, hour=14, minute=0)  # Setiap tanggal 29 April jam 00:00
 # trigger_hari_tari = CronTrigger(month=4, day=29, hour=0, minute=0)  # Setiap tanggal 29 April jam 00:00
-trigger_hari_tari = CronTrigger(month=5, day=4, hour=14, minute=0)  # Setiap tanggal 29 April jam 00:00
+trigger_hari_tari = CronTrigger(month=4, day=29, hour=0, minute=0)  # Setiap tanggal 29 April jam 00:00
 scheduler.add_job(kirim_notifikasi_hari_tari, trigger_hari_tari, id='hari_tari_job', replace_existing=True)
 
 # Scheduler kedua: Menjadwalkan scraping setiap hari jam 1 AM

@@ -53,5 +53,5 @@ def RequestForgotPassword():
 
     # Kirim OTP ke email pengguna
     send_otp_email(email, otp)
-    
-    return jsonify({'message': 'OTP reset password telah dikirim!'}), 200
+
+    return jsonify({'success': True, 'message': 'OTP reset password telah dikirim!'}), 200

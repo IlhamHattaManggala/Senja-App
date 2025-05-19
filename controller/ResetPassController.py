@@ -9,6 +9,14 @@ def RequestResetPassword():
     data = request.json
     otp = data.get('otp')
     new_password = data.get('password')
+    client_api_key = request.headers.get('x-api-key')
+
+        # Validasi API key
+    if not client_api_key or client_api_key != ConfigClass.API_KEY:
+        return jsonify({
+            "status": "Gagal",
+            "message": "API key tidak valid"
+        }), 401
     resetPass_collection = mongo.db[ConfigClass.RESET_PASSWORD_COLLECTION]
     user_collection = mongo.db[ConfigClass.USER_COLLECTION]
 
@@ -37,7 +45,7 @@ def RequestResetPassword():
         # Hapus entri OTP setelah digunakan
         resetPass_collection.delete_one({'token': otp})
 
-        return jsonify({'message': 'Password berhasil direset!'}), 200
+        return jsonify({'success': True, 'message': 'Password berhasil direset!'}), 200
 
     except Exception as e:
-        return jsonify({'message': 'Terjadi kesalahan saat mereset password!'}), 500
+        return jsonify({'success': False, 'message': 'Terjadi kesalahan saat mereset password!'}), 500

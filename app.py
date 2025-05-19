@@ -37,6 +37,7 @@ from controller.NotifikasiController import deleteNotifikasi, kirim_notifikasi_h
 from controller.ScrappingController import run_scraping 
 from controller.VisualisasiController import render_visualizations
 from controller.ScrappingController import run_scraping  # Ganti dengan nama file scraping kamu
+from controller.LoginGoogleController import LoginGoogle
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 import atexit
@@ -48,9 +49,6 @@ from middleware.token import token_required
 scheduler = BackgroundScheduler()
 
 # Scheduler untuk Hari Tari Sedunia setiap tahun pada tanggal 29 April, jam 00:00
-trigger_hari_tari = CronTrigger(month=4, day=29, hour=0, minute=0)  # Setiap tanggal 29 April jam 00:00
-# trigger_hari_tari = CronTrigger(month=5, day=4, hour=14, minute=0)  # Setiap tanggal 29 April jam 00:00
-# trigger_hari_tari = CronTrigger(month=4, day=29, hour=0, minute=0)  # Setiap tanggal 29 April jam 00:00
 trigger_hari_tari = CronTrigger(month=4, day=29, hour=0, minute=0)  # Setiap tanggal 29 April jam 00:00
 scheduler.add_job(kirim_notifikasi_hari_tari, trigger_hari_tari, id='hari_tari_job', replace_existing=True)
 
@@ -107,6 +105,12 @@ def register():
 def login():
     return RequestLogin()
 
+
+# ---------------------- LOGIN GOOGLE ----------------------
+@app.route('/api/users/v1/login-google', methods=['POST'])
+def login_google():
+    return LoginGoogle()
+
 # -------------------- LOGIN BASIC AUTH ----------------
 
 @app.route('/api/users/v1/login-basic', methods=['POST'])
@@ -123,7 +127,7 @@ def protected_route():
     }), 200
 
 # ---------------------- FORGOT PASSWORD ----------------------
-@app.route('/api/users/v1/forgot-password', methods=['POST'])
+@app.route('/api/users/v1/lupa-password', methods=['POST'])
 def forgot_password():
     return RequestForgotPassword()
 

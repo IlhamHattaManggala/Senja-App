@@ -7,7 +7,6 @@ from datetime import datetime
 def VerifyPin():
     try:
         data = request.json
-        email = data.get('email')
         otp = data.get('otp')
         client_api_key = request.headers.get('x-api-key')
 
@@ -19,8 +18,8 @@ def VerifyPin():
             }), 401
 
         # Validasi input
-        if not email or not otp:
-            return jsonify({'message': 'Email dan OTP harus diisi!'}), 400
+        if not otp:
+            return jsonify({'message': 'OTP harus diisi!'}), 400
 
         reset_pass_coll = mongo.db[ConfigClass.RESET_PASSWORD_COLLECTION]
 
@@ -34,7 +33,7 @@ def VerifyPin():
             return jsonify({'message': 'OTP sudah kadaluarsa!'}), 403
 
         # Jika valid
-        return jsonify({'message': 'OTP valid! Silakan lanjutkan dengan reset password.'}), 200
+        return jsonify({'success': True, 'message': 'OTP valid! Silakan lanjutkan dengan reset password.'}), 200
 
     except Exception as e:
-        return jsonify({'message': f'Terjadi kesalahan: {str(e)}'}), 500
+        return jsonify({'success': False, 'message': f'Terjadi kesalahan: {str(e)}'}), 500

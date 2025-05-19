@@ -23,7 +23,7 @@ def RequestLogin():
     # Token hanya berisi _id, tidak ada data sensitif lainnya
     access_token = create_access_token(
         identity=str(user['_id']),
-        expires_delta=timedelta(hours=1)  # Token akan kedaluwarsa dalam 1 jam
+        expires_delta=timedelta(days=1)  # Token akan kedaluwarsa dalam 1 hari
     )
 
     return jsonify({

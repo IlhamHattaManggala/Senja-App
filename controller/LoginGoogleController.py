@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 import hashlib
 import secrets
 import os
@@ -9,6 +9,7 @@ from flask_jwt_extended import create_access_token
 from werkzeug.utils import secure_filename
 from config import ConfigClass
 from db import mongo
+from firebase.firebase_service import FirebaseService
 
 # Fungsi hash MD5
 def md5_hash(password):
@@ -29,7 +30,7 @@ def download_avatar(avatar_url, username):
         if response.status_code == 200:
             with open(filepath, "wb") as f:
                 f.write(response.content)
-            return f"/static/img/avatar/{filename}"
+            return filename
         else:
             return None
     except Exception as e:
@@ -74,6 +75,26 @@ def LoginGoogle():
             }
             insert_result = user_col.insert_one(new_user)
             user_id = insert_result.inserted_id
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            FirebaseService.send_notification(
+                title = "Terima kasih telah mendaftar",
+                body="Selamat datang di aplikasi kami!, kami senang Anda bergabung. Selamat menggunakan aplikasi kami!",
+                topic="user_baru",
+                data={
+                    "isRead": "false",  # Mengirimkan status isRead
+                    "time": current_time,  # Mengirimkan waktu notifikasi
+                }
+            )
+            notifikasi_collection = ConfigClass.NOTIFIKASI_COLLECTION
+
+            mongo.db[notifikasi_collection].insert_one({
+                'email': email,
+                'title': 'Terima kasih telah mendaftar',
+                'body': 'Selamat datang di aplikasi kami!, kami senang Anda bergabung. Selamat menggunakan aplikasi kami!',
+                'topic': "user_baru",
+                'isRead': False,
+                'time': current_time,
+            })
         else:
             # Update avatar (opsional, bisa dihapus kalau tidak perlu update tiap login)
             avatar = download_avatar(avatar_url, existing_user['name'])

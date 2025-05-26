@@ -1,61 +1,51 @@
 from flask import request, jsonify
 from db import mongo
 from bson import ObjectId
-from config import ConfigClass, configClass
+from config import ConfigClass, allowed_file, secure_filename
+import os
 from werkzeug.security import generate_password_hash
 
 user_collection = mongo.db[ConfigClass.USER_COLLECTION]
 
 def RequestUpdateProfile(current_user):
-    update_data = request.get_json()
-    client_api_key = request.headers.get('x-api-key')
-    if not client_api_key or client_api_key != ConfigClass.API_KEY:
-        return jsonify({
-            "status": "Gagal",
-            "message": "API key tidak valid"
-        }), 401
+    data = request.form
+    name = data.get('name')
+    email = data.get('email')
+    password = data.get('password')
+    avatar = request.files.get('avatar')
 
-    # Data yang ingin diperbarui
-    name = update_data.get('name')
-    email = update_data.get('email')
-    avatar = update_data.get('avatar')
-    password = update_data.get('password')
-    role = update_data.get('role')  # Ambil role baru jika ada, ganti dari 'user' menjadi 'role'
-
-    # Validasi bahwa setidaknya satu data perlu diperbarui
-    if not name and not email and not avatar and not role:
-        return jsonify({'status': 'gagal', 'pesan': 'Minimal satu data harus diupdate'}), 400
-
-    # Jika email diubah, cek apakah email sudah digunakan oleh pengguna lain
-    if email and user_collection.find_one({'email': email}):
-        return jsonify({'status': 'gagal', 'pesan': 'Email sudah digunakan oleh pengguna lain'}), 409
-
-    # Update data yang valid
-    update_values = {}
+    update_data = {}
     if name:
-        update_values['name'] = name
+        update_data['name'] = name
+
     if email:
-        update_values['email'] = email
-    if avatar:
-        update_values['avatar'] = avatar
+        existing = user_collection.find_one({'email': email})
+        if existing and str(existing['_id']) != str(current_user['_id']):
+            return jsonify({'status': 'gagal', 'pesan': 'Email sudah digunakan'}), 409
+        update_data['email'] = email
+
     if password:
-        update_values['password'] = generate_password_hash(password)
-    if role:
-        update_values['role'] = role  # Pastikan role diupdate dengan benar
+        update_data['password'] = generate_password_hash(password)
 
-    # Memperbarui data pengguna di MongoDB
-    user_collection.update_one({'_id': ObjectId(current_user['_id'])}, {'$set': update_values})
-    
+    if avatar and allowed_file(avatar.filename):
+        username = current_user['name'] if 'name' in current_user else "user"
+        filename = secure_filename(username.lower().replace(" ", "_")) + ".jpg"
+        folder_path = os.path.join("static", "img", "avatar")
+        os.makedirs(folder_path, exist_ok=True)
+        filepath = os.path.join(folder_path, filename)
+
+        avatar.save(filepath)
+
+        avatar_url = filename
+        update_data['avatar'] = avatar_url
+
+    user_collection.update_one(
+        {'_id': ObjectId(current_user['_id'])},
+        {'$set': update_data}
+    )
+
     updated_user = user_collection.find_one({'_id': ObjectId(current_user['_id'])})
+    updated_user['_id'] = str(updated_user['_id'])
+    updated_user.pop('password', None)
 
-
-    return jsonify({
-        'status': 'sukses',
-        'pesan': 'Profil berhasil diperbarui',
-        'data': {
-            'name': updated_user['name'],
-            'email': updated_user['email'],
-            'role': role if role else updated_user['role'], 
-            'avatar': updated_user['avatar']
-        }
-    }), 200
+    return jsonify({'status': 'sukses', 'data': updated_user}), 200

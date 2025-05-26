@@ -1,10 +1,11 @@
+import os
 from flask import Flask, Response, render_template, jsonify, request
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required
 from flask_httpauth import HTTPBasicAuth  # Import Flask-HTTPAuth
 
 # Import konfigurasi dan modul database
-from config import configClass
+from config import UPLOAD_FOLDER, configClass
 from db import mongo, init_mongo  # pastikan init_mongo menginisialisasi mongo
 
 # Inisialisasi Flask App
@@ -60,7 +61,7 @@ scheduler.start()
 
 # Agar job berhenti dengan rapi saat aplikasi ditutup
 atexit.register(lambda: scheduler.shutdown())
-
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # ---------------------- Basic Authentication ----------------------
 
 user_collection = configClass.USER_COLLECTION
@@ -179,6 +180,12 @@ def update_profile(current_user):
 def get_riwayat(current_user):
     return RequestRiwayat(current_user)
 
+# ---------------------- ROUTE: POST RIWAYAT ----------------------
+@app.route('/api/users/v1/add-riwayat', methods=['POST'])
+@token_required
+def addRiwayat(current_user):
+    return add_riwayat(current_user)
+
 # ---------------------- ROUTE: RUN SCRAPING ----------------------
 @app.route('/run_scraping', methods=['GET'])
 def start_scraping():
@@ -203,4 +210,4 @@ def get_articles():
 
 # ---------------------- RUN ----------------------
 if __name__ == '__main__':
-    app.run(debug=True, port=5000, host='0.0.0.0')
+    app.run(debug=True, port=5000, host='0.0.0.0', use_reloader=False)

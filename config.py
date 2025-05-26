@@ -1,3 +1,6 @@
+import os
+from werkzeug.utils import secure_filename as werkzeug_secure_filename
+
 MONGO_URI = "mongodb://localhost:27017/senja"
 DATABASE_NAME = "senja"
 SECRET_KEY = 'senja-app'
@@ -17,7 +20,14 @@ BASIC_AUTH_USERS = {
 
 # Menambahkan API Key untuk akses API
 API_KEY = 'senjawebdev-12'  # Ganti dengan API Key yang aman dan unik
+UPLOAD_FOLDER = os.path.join("static", "img", "avatar")
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def secure_filename(filename):
+    return werkzeug_secure_filename(filename)
 class ConfigClass:
     SECRET_KEY = SECRET_KEY
     MONGO_URI = MONGO_URI

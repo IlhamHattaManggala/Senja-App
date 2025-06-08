@@ -97,21 +97,25 @@ def check_api_key(func):
 
 # ---------------------- REGISTER ----------------------
 @app.route('/api/users/v1/register', methods=['POST'])
+@csrf.exempt
 def register():
     return RequestRegister()
 
 # ---------------------- REGISTER Google ----------------------
 @app.route('/api/users/v1/register-google', methods=['POST'])
+@csrf.exempt
 def regisGoogle():
     return registerGoogle()
 
 # ---------------------- LOGIN ----------------------
 @app.route('/api/users/v1/login', methods=['POST'])
+@csrf.exempt
 def login():
     return RequestLogin()
 
 # ---------------------- LOGIN GOOGLE ----------------------
 @app.route('/api/users/v1/login-google', methods=['POST'])
+@csrf.exempt
 def login_google():
     return LoginGoogle()
 
@@ -132,16 +136,19 @@ def protected_route():
 
 # ---------------------- FORGOT PASSWORD ----------------------
 @app.route('/api/users/v1/lupa-password', methods=['POST'])
+@csrf.exempt
 def forgot_password():
     return RequestForgotPassword()
 
 # ---------------------- VERIFIKASI PIN ----------------------
 @app.route('/api/users/v1/verify-pin', methods=['POST'])
+@csrf.exempt
 def verify_pin():
     return VerifyPin()
 
 # ---------------------- RESET PASSWORD ----------------------
 @app.route('/api/users/v1/reset-password', methods=['POST'])
+@csrf.exempt
 def reset_password():
     return RequestResetPassword()
 
@@ -149,50 +156,59 @@ def reset_password():
 
 # ---------------------- BERANDA ----------------------
 @app.route('/api/users/v1/verify-email', methods=['POST'])
+@csrf.exempt
 @token_required
 def verifyEmail(current_user):
     return RequestVerifyEmail(current_user)
 
 # ---------------------- BERANDA ----------------------
 @app.route('/api/users/v1/beranda', methods=['GET'])
+@csrf.exempt
 @token_required
 def beranda(current_user):
     return RequestBeranda(current_user)
 
 # ------------------------ NOTIFIKASI ---------------------
 @app.route('/api/users/v1/notifikasi', methods=['GET'])
+@csrf.exempt
 @jwt_required()
 def list_notifikasi():
     return getAllNotifikasi()
 
 @app.route('/api/users/v1/notifikasi/<string:notif_id>/read', methods=['PATCH'])
+@csrf.exempt
 def mark_as_read(notif_id):
     return readNotifikasi(notif_id)
 
 @app.route('/api/users/v1/notifikasi/<string:notif_id>', methods=['DELETE'])
+@csrf.exempt
 def remove_notifikasi(notif_id):
     return deleteNotifikasi(notif_id)
 
 # ---------------------- ROUTE: PROFILE ----------------------
 @app.route('/api/users/v1/profile', methods=['GET'])
+@csrf.exempt
 @token_required
 def get_profile(current_user):
     return RequestProfile(current_user)
 
 # ---------------------- ROUTE: UPDATE PROFILE ----------------------
 @app.route('/api/users/v1/profile', methods=['PUT'])
+@csrf.exempt
 @token_required
 def update_profile(current_user):
     return RequestUpdateProfile(current_user)
 
 # ---------------------- ROUTE: MENGAMBIL RIWAYAT ----------------------
 @app.route('/api/users/v1/riwayat', methods=['GET'])
+@csrf.exempt
 @token_required
 def get_riwayat(current_user):
     return RequestRiwayat(current_user)
 
 # ---------------------- ROUTE: POST RIWAYAT ----------------------
 @app.route('/api/users/v1/add-riwayat', methods=['POST'])
+@csrf.exempt
 @token_required
 def addRiwayat(current_user):
     return add_riwayat(current_user)

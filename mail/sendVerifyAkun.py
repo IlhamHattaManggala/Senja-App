@@ -6,7 +6,7 @@ from config import ConfigClass
 def send_verify_email(email, otp):
     sender_email = ConfigClass.MAIL_DEFAULT_SENDER  # Ganti dengan email pengirim
     sender_login_email = ConfigClass.MAIL_USERNAME
-    sender_password = "lqkv ljza mhbi qpbx"  # Ganti dengan App Password Gmail
+    sender_password = ConfigClass.MAIL_PASSWORD  # Ganti dengan App Password Gmail
     recipient_email = email
 
     # Konten email dengan format HTML

@@ -52,7 +52,7 @@ class ConfigClass:
     MAIL_PORT = 587
     MAIL_USE_TLS = True
     MAIL_USERNAME = 'ilhamhattamanggala123@gmail.com'  # Ganti dengan email Anda
-    MAIL_PASSWORD = 'nxei sqvz guzs yujp'  # Ganti dengan password aplikasi atau password email Anda
+    MAIL_PASSWORD = 'lqkv ljza mhbi qpbx'  # Ganti dengan password aplikasi atau password email Anda
     MAIL_DEFAULT_SENDER = 'senjaapp@gmail.com'  # Email pengirim
 
     # Menambahkan Basic Authentication dan API Key konfigurasi

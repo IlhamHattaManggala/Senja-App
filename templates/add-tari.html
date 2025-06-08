@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tambah Tari - SENJA APP</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:wght@100;300;480;700&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #222327;
+            font-family: 'Poppins', sans-serif;
+            color: #dbb35c;
+            padding: 40px;
+        }
+        .container {
+            background-color: #2c2c31;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: auto;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-size: 0.95rem;
+        }
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: none;
+            border-radius: 6px;
+            background-color: #333;
+            color: #fff;
+            resize: vertical;
+        }
+        button {
+            background-color: #dbb35c;
+            color: #000;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            margin-top: 20px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #eec77a;
+        }
+        a {
+            color: #dbb35c;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tambah Data Tari</h1>
+        <form method="POST" action="{{ url_for('tambah_tari') }}">
+            <label for="name">Nama Tari:</label>
+            <input type="text" id="name" name="name" required />
+
+            <label for="level">Level Kesulitan:</label>
+            <select id="level" name="level" required>
+                <option value="">Pilih Level</option>
+                <option value="Level Pemula">Mudah</option>
+                <option value="Level Menengah">Sedang</option>
+                <option value="Level Mahir">Sulit</option>
+            </select>
+
+            <label for="asal">Asal Daerah:</label>
+            <input type="text" id="asal" name="asal" required />
+
+            <label for="description">Deskripsi:</label>
+            <textarea id="description" name="description" rows="5" required></textarea>
+
+            <label for="imageUrl">URL Gambar Tari:</label>
+            <input type="text" id="imageUrl" name="imageUrl" />
+
+            <hr style="margin: 25px 0; border-color: #444;" />
+            <h3>Gerakan</h3>
+
+            <label for="detail_name">Nama Gerakan:</label>
+            <input type="text" id="detail_name" name="detail_name" />
+
+            <label for="detail_image">URL Gambar Gerakan:</label>
+            <input type="text" id="detail_image" name="detail_image" />
+
+            <label for="detail_video">URL Video Gerakan:</label>
+            <input type="text" id="detail_video" name="detail_video" />
+
+            <button type="submit">Simpan</button>
+        </form>
+        <a href="{{ url_for('data_tari') }}">← Kembali ke Data Tari</a>
+    </div>
+</body>
+</html>

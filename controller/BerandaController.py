@@ -13,6 +13,7 @@ def RequestBeranda(current_user):
             "message": "API key tidak valid"
         }), 401
     base_url = request.host_url.rstrip('/') + '/static/img'
+    base = request.host_url.rstrip('/')
 
     # --- Tari Section ---
     tari_data = tari_collection.find()
@@ -22,12 +23,13 @@ def RequestBeranda(current_user):
         gerakan_list = []
         
         for gerakan in tari.get('gerakan',[]):
+            image_url = f"{base_url}/gerakan/{gerakan['imageUrl']}" if 'imageUrl' in gerakan else None
+            video_url = f"{base}/static/vidio/{gerakan['videoUrl']}" if 'videoUrl' in gerakan else None
             gerakan_list.append({
                 "name": gerakan['name'],
-                "imageUrl": f"{base_url}/gerakan/{gerakan['imageUrl']}" if 'imageUrl' in gerakan else None,
-                "vidioUrl": f"/static/vidio/{gerakan['videoUrl']}" if 'videoUrl' in gerakan else None
+                "imageUrl": image_url,
+                "videoUrl": video_url,
             })
-        print(gerakan_list)
 
         image_url_tari = f"{base_url}/tari/{tari['imageUrl']}" if 'imageUrl' in tari else None
 

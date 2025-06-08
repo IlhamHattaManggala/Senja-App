@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Tari - SENJA APP</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:wght@100;300;480;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #222327;
+            font-family: 'Poppins', sans-serif;
+            color: #dbb35c;
+            padding: 40px;
+        }
+        .container {
+            background-color: #2c2c31;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: auto;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-size: 0.95rem;
+        }
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: none;
+            border-radius: 6px;
+            background-color: #333;
+            color: #fff;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        button {
+            background-color: #dbb35c;
+            color: #000;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            margin-top: 20px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #eec77a;
+        }
+        a {
+            color: #dbb35c;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Data Tari</h1>
+        <form action="{{ url_for('update_tari', tari_id=tari._id) }}" method="POST">
+            <label for="name">Nama Tari</label>
+            <input type="text" id="name" name="name" value="{{ tari.name }}" required>
+
+            <label for="level">Level</label>
+            <input type="text" id="level" name="level" value="{{ tari.level }}" required>
+
+            <label for="asal">Asal</label>
+            <input type="text" id="asal" name="asal" value="{{ tari.asal }}" required>
+
+            <label for="description">Deskripsi</label>
+            <textarea id="description" name="description" required>{{ tari.description }}</textarea>
+
+            <button type="submit">Simpan Perubahan</button>
+        </form>
+        <a href="{{ url_for('data_tari') }}">← Kembali ke Data Tari</a>
+    </div>
+</body>
+</html>

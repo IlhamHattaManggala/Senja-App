@@ -1,9 +1,11 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from config import ConfigClass
 
 def send_otp_email(email, otp):
-    sender_email = "ilhamhattamanggala123@gmail.com"  # Ganti dengan email pengirim
+    sender_email = ConfigClass.MAIL_DEFAULT_SENDER  # Ganti dengan email pengirim
+    sender_login_email = ConfigClass.MAIL_USERNAME
     sender_password = "lqkv ljza mhbi qpbx"  # Ganti dengan App Password Gmail
     recipient_email = email
 
@@ -85,7 +87,7 @@ def send_otp_email(email, otp):
         # Menghubungkan ke server SMTP Gmail
         with smtplib.SMTP("smtp.gmail.com", 587) as server:
             server.starttls()  # Mulai koneksi TLS
-            server.login(sender_email, sender_password)  # Login ke Gmail
+            server.login(sender_login_email, sender_password)  # Login ke Gmail
             server.sendmail(sender_email, recipient_email, message.as_string())  # Kirim email
         print("Email OTP berhasil dikirim!")
     except Exception as e:

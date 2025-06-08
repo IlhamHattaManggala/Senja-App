@@ -13,6 +13,12 @@ def RequestUpdateProfile(current_user):
     email = data.get('email')
     password = data.get('password')
     avatar = request.files.get('avatar')
+    client_api_key = request.headers.get('x-api-key')
+    if not client_api_key or client_api_key != ConfigClass.API_KEY:
+        return jsonify({
+            "status": "Gagal",
+            "message": "API key tidak valid"
+        }), 401
 
     update_data = {}
     if name:

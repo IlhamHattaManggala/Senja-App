@@ -27,7 +27,7 @@ def RequestResetPassword():
 
     # Verifikasi apakah OTP yang dimasukkan sesuai dan masih berlaku
     if reset_entry['expiry'] < datetime.utcnow():
-        return jsonify({'message': 'OTP sudah kadaluarsa!'}), 400
+        return jsonify({'message': 'OTP sudah kadaluarsa!'}), 402
 
     try:
         # Mencari pengguna berdasarkan user_id dari entri OTP

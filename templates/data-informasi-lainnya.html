@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Data Informasi Lainnya - SENJA APP</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:wght@100;300;480;700&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+        :root {
+            --bg-color: #222327;
+            --text-color: #dbb35c;
+            --main-color: #5C4033;
+            --card-color: #2c2c31;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 220px;
+            background-color: var(--card-color);
+            padding: 20px;
+            height: 100vh;
+            position: fixed;
+        }
+        .sidebar h2 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .sidebar a {
+            display: block;
+            color: var(--text-color);
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .sidebar a:hover {
+            background-color: var(--main-color);
+            color: #fff;
+        }
+        .main-content {
+            margin-left: 220px;
+            padding: 30px;
+            flex: 1;
+        }
+        .main-content h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .search-box input {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: none;
+            outline: none;
+            width: 250px;
+            background-color: #444;
+            color: #fff;
+        }
+        .search-box input::placeholder {
+            color: #ccc;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--card-color);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            color: #fff;
+            vertical-align: top;
+        }
+        th {
+            background-color: var(--main-color);
+        }
+        tr:nth-child(even) {
+            background-color: #333;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .btn-edit {
+            background-color: #dbb35c;
+            color: #000;
+        }
+        .btn-delete {
+            background-color: #a21818;
+            color: #fff;
+        }
+        .btn-edit:hover {
+            background-color: #eec77a;
+        }
+        .btn-delete:hover {
+            background-color: #c92a2a;
+        }
+
+        img {
+            border-radius: 6px;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .action-buttons form {
+            margin: 0;
+        }
+
+        @media (max-width: 600px) {
+            .search-box input {
+                width: 100%;
+            }
+            .top-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <h2>SENJA APP</h2>
+    <a href="beranda-admin.html">Dashboard</a>
+    <a href="data-pengguna.html">Data Pengguna</a>
+    <a href="data-tari.html">Data Tari</a>
+    <a href="data-informasi-lainnya.html">Data Informasi Lainnya</a>
+    <a href="#" onclick="return confirmLogout()">Keluar</a>
+</div>
+
+<div class="main-content">
+    <h1>Informasi Lainnya</h1>
+
+    <div class="top-bar">
+        <div class="search-box">
+            <input type="text" id="searchInput" onkeyup="searchInfo()" placeholder="Cari berdasarkan nama...">
+        </div>
+        <a href="{{ url_for('tambah_informasi_lainnya') }}" class="btn btn-edit">+ Tambah Informasi Lainnya</a>
+    </div>
+
+    <table id="infoTable">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Asal</th>
+                <th>Kategori</th>
+                <th>Deskripsi</th>
+                <th>Gambar</th>
+                <th>Detail</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in data %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.asal }}</td>
+                <td>{{ item.category }}</td>
+                <td>{{ item.description[:50] }}{% if item.description|length > 50 %}...{% endif %}</td>
+                <td>
+                    <img src="{{ url_for('static', filename='img/seni-lainnya/' + item.imageUrl) }}" alt="{{ item.name }}" width="100">
+                </td>
+                <td>
+                    <ul>
+                        {% for detail in item.details %}
+                        <li>
+                            <strong>{{ detail.name }}</strong><br>
+                            <img src="{{ url_for('static', filename='img/seni-lainnya/' + detail.imageUrl) }}" alt="{{ detail.name }}" width="80"><br>
+                            {{ detail.description[:30] }}{% if detail.description|length > 30 %}...{% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <div class="action-buttons">
+                        <a href="{{ url_for('edit_informasi_lainnya', item_id=item._id) }}" class="btn btn-edit">Edit</a>
+                        <form action="{{ url_for('delete_informasi_lainnya', item_id=item._id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?');">
+                            <button type="submit" class="btn btn-delete">Hapus</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8">Tidak ada data informasi lainnya</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function confirmLogout() {
+        const konfirmasi = confirm("Yakin ingin keluar?");
+        if (konfirmasi) {
+            window.location.href = "/logout-admin"; // ⬅ logout beneran
+        }
+        return false;
+    }
+
+function searchInfo() {
+    const input = document.getElementById("searchInput").value.toLowerCase();
+    const rows = document.querySelectorAll("#infoTable tbody tr");
+
+    rows.forEach(row => {
+        const nama = row.cells[1].textContent.toLowerCase();
+        row.style.display = nama.includes(input) ? "" : "none";
+    });
+}
+</script>
+</body>
+</html>

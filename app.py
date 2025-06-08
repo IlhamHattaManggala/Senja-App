@@ -1,16 +1,25 @@
-import os
-from flask import Flask, Response, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, redirect, url_for, session
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required
-from flask_httpauth import HTTPBasicAuth  # Import Flask-HTTPAuth
+from flask_httpauth import HTTPBasicAuth
+from werkzeug.security import check_password_hash
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+import atexit
+from flask_wtf import CSRFProtect
+from flask_wtf.csrf import generate_csrf
 
 # Import konfigurasi dan modul database
 from config import UPLOAD_FOLDER, configClass
-from db import mongo, init_mongo  # pastikan init_mongo menginisialisasi mongo
+from db import mongo, init_mongo
 
 # Inisialisasi Flask App
 app = Flask(__name__)
 CORS(app)
+
+# Inisialisasi CSRF Protection
+csrf = CSRFProtect()
+csrf.init_app(app)
 
 # Inisialisasi BasicAuth
 auth = HTTPBasicAuth()
@@ -26,9 +35,11 @@ init_mongo(app)
 
 # Sekarang aman untuk import semua controller (karena mongo sudah siap)
 from controller.BerandaController import RequestBeranda
+from controller.AdminController.DataController import add_informasi_lainnya, add_pengguna, add_tari, datas, delete_informasi, delete_taris, edit_informasi, informasi_lainnya, tari_data, tari_edit, update_informasi, update_taris, user_delete, user_edit, user_update
 from controller.ForgotPassController import RequestForgotPassword
 from controller.LoginController import RequestLogin
 from controller.ProfileController.GetProfile import RequestProfile
+from controller.VerifyEmailController import RequestVerifyEmail
 from controller.ProfileController.UpdateProfile import RequestUpdateProfile
 from controller.RegisterController import RequestRegister
 from controller.ResetPassController import RequestResetPassword
@@ -38,11 +49,13 @@ from controller.NotifikasiController import deleteNotifikasi, kirim_notifikasi_h
 from controller.ScrappingController import run_scraping 
 from controller.VisualisasiController import render_visualizations
 from controller.ScrappingController import run_scraping  # Ganti dengan nama file scraping kamu
-from controller.LoginGoogleController import LoginGoogle
+from controller.LoginGoogleController import LoginGoogle, registerGoogle
+from controller.AdminController.AdminBerandaController import admin_beranda
+from controller.AdminController.AdminLoginController import admin_check_login, admin_login, admin_logout
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 import atexit
-from werkzeug.security import check_password_hash
+
 # Middleware untuk validasi token
 from middleware.token import token_required
 
@@ -61,6 +74,7 @@ scheduler.start()
 
 # Agar job berhenti dengan rapi saat aplikasi ditutup
 atexit.register(lambda: scheduler.shutdown())
+# ---------------------- Konfigurasi Upload Folder ----------------------
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # ---------------------- Basic Authentication ----------------------
 
@@ -81,31 +95,20 @@ def check_api_key(func):
         return func(*args, **kwargs)  
     return wrapper
 
-# ---------------------- ROUTES ----------------------
-
-@app.route('/')
-def home():
-    return render_template('index.html')
-
-@app.route('/data.html')
-def data():
-    articles = mongo.db.articles.find()
-    return render_template('data.html', articles=articles)
-
-@app.route('/visualisasi')
-def visualisasi():
-    return render_visualizations() 
-
 # ---------------------- REGISTER ----------------------
 @app.route('/api/users/v1/register', methods=['POST'])
 def register():
     return RequestRegister()
 
+# ---------------------- REGISTER Google ----------------------
+@app.route('/api/users/v1/register-google', methods=['POST'])
+def regisGoogle():
+    return registerGoogle()
+
 # ---------------------- LOGIN ----------------------
 @app.route('/api/users/v1/login', methods=['POST'])
 def login():
     return RequestLogin()
-
 
 # ---------------------- LOGIN GOOGLE ----------------------
 @app.route('/api/users/v1/login-google', methods=['POST'])
@@ -141,6 +144,14 @@ def verify_pin():
 @app.route('/api/users/v1/reset-password', methods=['POST'])
 def reset_password():
     return RequestResetPassword()
+
+
+
+# ---------------------- BERANDA ----------------------
+@app.route('/api/users/v1/verify-email', methods=['POST'])
+@token_required
+def verifyEmail(current_user):
+    return RequestVerifyEmail(current_user)
 
 # ---------------------- BERANDA ----------------------
 @app.route('/api/users/v1/beranda', methods=['GET'])
@@ -208,6 +219,104 @@ def get_articles():
         })
     return jsonify(result)
 
+# ---------------------- HALAMAN ADMIN ----------------------
+# ======================
+# Beranda publik
+# ======================
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+# ======================
+# Login Admin API
+# ======================
+@app.route('/api/admin/v1/login', methods=['POST'])
+def login_admin():
+    return admin_login()
+
+# ======================
+# HTML Login Page
+# ======================
+@app.route('/login-admin.html')
+def admins_login():
+    return admin_check_login()
+
+# ======================
+# Logout
+# ======================
+@app.route('/logout-admin')
+def logout():
+    return admin_logout()
+
+# ======================
+# Admin Pages (harus login)
+# ======================
+@app.route('/beranda-admin.html')
+def beranda_admin():
+    return admin_beranda()
+
+@app.route('/data-pengguna.html')
+def data_pengguna():
+    return datas()
+
+@app.route('/data-tari.html')
+def data_tari():
+    return tari_data()
+
+@app.route('/data-informasi-lainnya.html')
+def data_informasi_lainnya():
+    return informasi_lainnya()
+
+#INFORMASI LAINNYA ADMIN
+@app.route('/edit-informasi-lainnya/<string:item_id>', methods=['GET'])
+def edit_informasi_lainnya(item_id):
+    return edit_informasi(item_id)
+
+@app.route('/update-informasi-lainnya/<string:item_id>', methods=['POST'])
+def update_informasi_lainnya(item_id):
+    return update_informasi(item_id)
+
+@app.route('/delete-informasi-lainnya/<string:item_id>', methods=['POST'])
+def delete_informasi_lainnya(item_id):
+    return delete_informasi(item_id)
+
+#TARI ADMIN
+@app.route('/edit-tari/<string:tari_id>', methods=['GET'])
+def edit_tari(tari_id):
+    return tari_edit(tari_id)
+
+@app.route('/update-tari/<string:tari_id>', methods=['POST'])
+def update_tari(tari_id):
+    return update_taris(tari_id)
+
+@app.route('/delete-tari/<string:tari_id>', methods=['POST'])
+def delete_tari(tari_id):
+    return delete_taris(tari_id)
+
+#Data user
+@app.route('/edit-user/<string:user_id>', methods=['GET'])
+def edit_user(user_id):
+    return user_edit(user_id)
+
+@app.route('/update-user/<string:user_id>', methods=['POST'])
+def update_user(user_id):
+    return user_update(user_id)
+
+@app.route('/delete-user/<string:user_id>', methods=['POST'])
+def delete_user(user_id):
+    return user_delete(user_id)
+
+@app.route('/add-pengguna', methods=['GET', 'POST'])
+def tambah_pengguna():
+    return add_pengguna()
+
+@app.route('/add-tari', methods=['GET', 'POST'])
+def tambah_tari():
+    return add_tari()
+
+@app.route('/add-informasi-lainnya', methods=['GET', 'POST'])
+def tambah_informasi_lainnya():
+    return add_informasi_lainnya()
 # ---------------------- RUN ----------------------
 if __name__ == '__main__':
     app.run(debug=True, port=5000, host='0.0.0.0', use_reloader=False)

@@ -5,25 +5,40 @@ from db import mongo
 from config import configClass
 from datetime import timedelta
 
+user_collection = mongo.db[configClass.USER_COLLECTION]
+verify_collection = mongo.db[configClass.VERIFY_EMAIL_COLLECTION]
+
 def RequestLogin():
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
     client_api_key = request.headers.get('x-api-key')
+
     if not client_api_key or client_api_key != configClass.API_KEY:
         return jsonify({
             "status": "Gagal",
             "message": "API key tidak valid"
         }), 401
-    user_collection = configClass.USER_COLLECTION
-    user = mongo.db[user_collection].find_one({'email': email})
+
+    # Cari user berdasarkan email
+    user = user_collection.find_one({'email': email})
     if not user or not check_password_hash(user['password'], password):
         return jsonify({'pesan': 'Email atau password salah'}), 401
 
-    # Token hanya berisi _id, tidak ada data sensitif lainnya
+    user_id = str(user['_id'])
+
+    # Cek apakah user sudah verifikasi email
+    verify_entry = verify_collection.find_one({'user_id': user_id})
+    if not verify_entry or verify_entry.get('emailVerifyAt') is None:
+        return jsonify({
+            'status': 'Gagal',
+            'pesan': 'Akun belum diverifikasi. Silakan cek email Anda untuk verifikasi.'
+        }), 403
+
+    # Jika sudah verifikasi, buat token
     access_token = create_access_token(
-        identity=str(user['_id']),
-        expires_delta=timedelta(days=1)  # Token akan kedaluwarsa dalam 1 hari
+        identity=user_id,
+        expires_delta=timedelta(days=1)
     )
 
     return jsonify({
@@ -31,7 +46,7 @@ def RequestLogin():
         'pesan': 'Login berhasil',
         'data': {
             'user': {
-                'id': str(user['_id']),
+                'id': user_id,
                 'name': user['name'],
                 'email': user['email'],
                 'role': user['role'],

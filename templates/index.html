@@ -182,16 +182,19 @@
             <i class="ri-home-heart-fill"></i><span>Senja App</span>
         </div>
 
-        <div class="navbar">
-            <a href="index.html" class="active">Beranda</a>
-            <a href="data.html">Data</a>
-            <a href="visualisasi.html">Visualisasi</a>
-            <a href="info.html">Informasi Lainnya</a>
-        </div>
+     <div class="navbar">
+    <a href="#hero">Beranda</a>
+    <a href="#fitur">Fitur</a>
+    <a href="#q&a">Q&A</a>
+    <a href="#cara-menggunakan">Cara Menggunakan</a>
+    <a href="#unduh">unduh</a>
+    <a href="#kontak">kontak</a>
+</div>
+
 
         <div class="nav-extra">
+            <a href="login-admin.html" id="user"><i data-feather="user"></i></a>
             <a href="#" id="search"><i data-feather="search"></i></a>
-            <a href="#" id="menu-icon"><i data-feather="menu"></i></a>
         </div>
     </header>
     <!-- Navbar End -->
@@ -207,6 +210,21 @@
     <!-- Hero Section End -->
 
     <script>
+  const navLinks = document.querySelectorAll('.navbar a');
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      // Hapus kelas 'active' dari semua menu
+      navLinks.forEach(l => l.classList.remove('active'));
+      
+      // Tambahkan kelas 'active' hanya ke menu yang diklik
+      this.classList.add('active');
+    });
+  });
+</script>
+
+
+    <script>
         feather.replace();
 
         document.getElementById('menu-icon').addEventListener('click', function () {
@@ -215,6 +233,13 @@
         });
     </script>
 </body>
+<!-- Tambahkan scroll-padding-top di tag <style> atau global CSS -->
+<style>
+    html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 100px; /* Supaya saat klik menu #fitur tidak terlalu ke atas */
+    }
+</style>
 
 <section id="fitur" style="background-color: var(--bg-color); padding: 3rem 1rem; text-align: center; height: 100vh; overflow-y: auto;">
     <h2 style="color: var(--text-color); font-size: 2rem; margin-bottom: 0.5rem;">Fitur</h2>
@@ -222,21 +247,21 @@
 
     <div id="fitur-container" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem;">
         <!-- Fitur 1 -->
-        <div class="fitur-card active" onclick="selectFitur(this)">
+        <div class="fitur-card">
             <img src="/static/img/web-img/deteksi.png" alt="Deteksi Real Time">
             <h3>Deteksi Real Time</h3>
             <p>Membantu mendeteksi gerakan</p>
         </div>
 
         <!-- Fitur 2 -->
-        <div class="fitur-card" onclick="selectFitur(this)">
+        <div class="fitur-card">
             <img src="/static/img/web-img/feedback.png" alt="Umpan Balik">
             <h3>Umpan Balik</h3>
             <p>Mengetahui akurasi gerakan betul</p>
         </div>
 
         <!-- Fitur 3 -->
-        <div class="fitur-card" onclick="selectFitur(this)">
+        <div class="fitur-card">
             <img src="/static/img/web-img/riwayat.png" alt="Riwayat Latihan">
             <h3>Riwayat Latihan</h3>
             <p>Untuk poin</p>
@@ -249,8 +274,8 @@
         background-color: var(--bg-color);
         padding: 3rem 1rem;
         text-align: center;
-        height: 100vh; /* Membuat fitur mengambil seluruh tinggi layar */
-        overflow-y: auto; /* Menambahkan scroll vertical */
+        height: 100vh;
+        overflow-y: auto;
     }
 
     #fitur h2 {
@@ -290,16 +315,13 @@
     }
 
     .fitur-card:hover {
-        background-color: #f1f1f1; /* Efek hover: ganti latar belakang */
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Efek bayangan saat hover */
-    }
-
-    .fitur-card.active {
-        background: linear-gradient(135deg, #5C4033, #3d2b1f);
+        background: linear-gradient(135deg, #5C4033, #3d2b1f); /* Warna berubah saat hover */
         color: var(--text-color);
+        box-shadow: 0 6px 15px rgba(92, 64, 51, 0.4);
+        transform: scale(1.02);
     }
 
-    .fitur-card.active h3 {
+    .fitur-card:hover h3 {
         color: var(--text-color);
     }
 
@@ -311,16 +333,9 @@
     }
 </style>
 
-<script>
-    function selectFitur(selected) {
-        const cards = document.querySelectorAll('.fitur-card');
-        cards.forEach(card => card.classList.remove('active'));
-        selected.classList.add('active');
-    }
-</script>
 
 <!-- FAQ Section Start -->
-<section id="faq" style="padding: 2rem; background-color: var(--bg-color); height: 100vh; overflow-y: auto;">
+<section id="q&a" style="padding: 2rem; background-color: var(--bg-color); height: 100vh; overflow-y: auto;">
     <h2 style="text-align: center; color: var(--text-color);">Pertanyaan Umum</h2>    
 
     <!-- FAQ Item 1 -->
@@ -581,123 +596,144 @@
     }
 </style>
 
-<!-- Informasi Tari Lengkap Section Start -->
-<section id="informasi-tari" style="background: var(--bg-color); padding: 3rem 1rem; text-align: center;">
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 2rem;">
-        <h2 style="font-size: 2rem; color: var(--text-color); margin: 0; flex: 1; text-align: left;">Lihat Informasi Tari Lengkapnya</h2>
-        <a href="struktur.html" style="background-color: var(--main-color); color: white; padding: 0.8rem 1.2rem; border-radius: 6px; text-decoration: none; font-weight: bold; margin-top: 1rem;">
-            Lihat Semua..
-        </a>
+<!-- Unduh Aplikasi Section Start -->
+<section id="unduh" class="unduh-section">
+  <div class="unduh-container">
+    <div class="unduh-image">
+      <img src="static/img/web-img/mockup.png" alt="Mockup Aplikasi">
     </div>
-
-    <!-- Swiper Slider -->
-    <div class="swiper-container">
-        <div class="swiper-wrapper">
-            <div class="swiper-slide"><img src="/static/img/web-img/tari-topeng-endel.jpeg" alt="Tari Topeng Endel" style="width: 100%; height: auto; border-radius: 8px;"></div>
-            <div class="swiper-slide"><img src="/static/img/web-img/tar-saman.jpeg" alt="Tari Saman" style="width: 100%; height: auto; border-radius: 8px;"></div> <!-- Gambar yang diganti -->
-            <div class="swiper-slide"><img src="/static/img/web-img/tari-betawi.jpeg" alt="Tari Saman" style="width: 100%; height: auto; border-radius: 8px;"></div>
-            <div class="swiper-slide"><img src="/static/img/web-img/tari-bali.jpeg" alt="Tari Bali" style="width: 100%; height: auto; border-radius: 8px;"></div>
-        </div>
-
-        <!-- Add Pagination -->
-        <div class="swiper-pagination"></div>
+    <div class="unduh-text">
+      <h1>Unduh aplikasi sekarang</h1>
+      <p>dan nikmati kemudahan dalam mengakses informasi kesehatan secara cepat, praktis, dan terpercaya—di mana pun dan kapan pun kamu butuhkan.</p>
+      <a href="#" class="btn-unduh">Unduh Sekarang</a>
     </div>
+  </div>
 </section>
-<!-- Informasi Tari Lengkap Section End -->
-
-<!-- Add Swiper.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
-
-<script>
-    // Initialize Swiper
-    const swiper = new Swiper('.swiper-container', {
-        slidesPerView: 1,
-        spaceBetween: 10,
-        navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-        },
-        pagination: {
-            el: '.swiper-pagination',
-            clickable: true,
-        },
-        breakpoints: {
-            768: {
-                slidesPerView: 2,
-                spaceBetween: 20,
-            },
-            1024: {
-                slidesPerView: 3,
-                spaceBetween: 30,
-            }
-        }
-    });
-</script>
+<!-- Unduh Aplikasi Section End -->
 
 <style>
-    .swiper-container {
-        width: 100%;
-        height: auto;
-        margin-top: 20px;
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 100px; /* Supaya anchor scroll gak ketutup navbar */
+  }
+
+  .unduh-section {
+    background: var(--bg-color);
+    color: var(--text-color);
+    height: 100vh;
+    box-sizing: border-box;
+    padding: 6rem 2rem 4rem; /* Tambah padding-top agar konten geser ke bawah */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+  }
+
+  .unduh-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    max-width: 1200px;
+    width: 100%;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .unduh-image img {
+    max-width: 450px;
+    width: 100%;
+    border-radius: 1rem;
+  }
+
+  .unduh-text {
+    flex: 1;
+    min-width: 300px;
+  }
+
+  .unduh-text h1 {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+  }
+
+  .unduh-text p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  .btn-unduh {
+    display: inline-block;
+    background: var(--primary-color);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s;
+  }
+
+  .btn-unduh:hover {
+    background: #cc9900;
+  }
+
+  @media (max-width: 768px) {
+    .unduh-container {
+      flex-direction: column;
+      text-align: center;
     }
 
-    .swiper-slide {
-        display: flex;
-        justify-content: center;
+    .unduh-image img {
+      max-width: 300px;
     }
 
-    .swiper-slide img {
-        width: 100%;
-        border-radius: 8px;
+    .unduh-text h1 {
+      font-size: 1.8rem;
     }
 
-    /* Optional Styling for Pagination */
-    .swiper-pagination {
-        bottom: 10px;
-        text-align: center;
+    .unduh-text p {
+      font-size: 1rem;
     }
-
-    .swiper-pagination-bullet {
-        background-color: var(--main-color);
-    }
-
-    .swiper-pagination-bullet-active {
-        background-color: var(--text-color);
-    }
+  }
 </style>
 
 <!-- Footer Section Start -->
 <footer style="background: var(--bg-color); color: var(--text-color); padding: 40px 1rem; text-align: center;">
-    <div class="footer-content" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 20px;">
-        <div class="footer-logo" style="flex: 1; margin: 10px;">
-            <a href="#" class="logo" style="color: var(--text-color); font-size: 1.5rem; display: flex; align-items: center;">
-                <i class="ri-home-heart-fill" style="font-size: 2rem; margin-right: 10px;"></i>
-                <span>Logo</span>
-            </a>
-        </div>
-        <div class="footer-links" style="flex: 2; text-align: center; margin: 10px;">
-            <ul style="list-style: none; padding: 0; margin: 0;">
-                <li><a href="#" style="color: var(--text-color); font-size: 1rem; padding: 5px 0; display: block; text-decoration: none; transition: color 0.3s ease;">Tentang Kami</a></li>
-                <li><a href="#" style="color: var(--text-color); font-size: 1rem; padding: 5px 0; display: block; text-decoration: none; transition: color 0.3s ease;">Kebijakan Privasi</a></li>
-                <li><a href="#" style="color: var(--text-color); font-size: 1rem; padding: 5px 0; display: block; text-decoration: none; transition: color 0.3s ease;">Syarat & Ketentuan</a></li>
-                <li><a href="#" style="color: var(--text-color); font-size: 1rem; padding: 5px 0; display: block; text-decoration: none; transition: color 0.3s ease;">Kontak</a></li>
-            </ul>
-        </div>
-        <div class="footer-social" style="flex: 1; margin: 10px;">
-            <a href="#" class="social-icon" style="color: var(--text-color); font-size: 1.5rem; margin: 0 10px; transition: color 0.3s ease;">
-                <i class="ri-facebook-fill"></i>
-            </a>
-            <a href="#" class="social-icon" style="color: var(--text-color); font-size: 1.5rem; margin: 0 10px; transition: color 0.3s ease;">
-                <i class="ri-twitter-fill"></i>
-            </a>
-            <a href="#" class="social-icon" style="color: var(--text-color); font-size: 1.5rem; margin: 0 10px; transition: color 0.3s ease;">
-                <i class="ri-linkedin-fill"></i>
-            </a>
-        </div>
+  <div class="footer-content" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; max-width: 1200px; margin: 0 auto; gap: 2rem;">
+    
+    <!-- Navigasi -->
+    <div class="footer-links" style="flex: 1; text-align: left;">
+      <h3>Menu</h3>
+      <ul style="list-style: none; padding: 0;">
+        <li><a href="#hero" style="color: var(--text-color); text-decoration: none;">Beranda</a></li>
+        <li><a href="#fitur" style="color: var(--text-color); text-decoration: none;">Fitur</a></li>
+        <li><a href="#q&a" style="color: var(--text-color); text-decoration: none;">Q&A</a></li>
+        <li><a href="#cara-menggunakan" style="color: var(--text-color); text-decoration: none;">Cara Menggunakan</a></li>
+        <li><a href="#unduh" style="color: var(--text-color); text-decoration: none;">Unduh</a></li>
+        <li><a href="#kontak" style="color: var(--text-color); text-decoration: none;">Kontak</a></li>
+      </ul>
     </div>
-    <div class="footer-bottom" style="margin-top: 20px; padding-top: 10px; border-top: 1px solid var(--text-color);">
-        <p style="font-size: 0.9rem; color: #aaa;">&copy; 2025 Nama Perusahaan. Semua hak dilindungi.</p>
+
+    <!-- Kontak -->
+    <div class="footer-contact" style="flex: 1; text-align: left;">
+      <h3 id="kontak">Kontak</h3>
+      <p>Email: <a href="mailto:appsenja@gmail.com" style="color: var(--text-color); text-decoration: none;">appsenja@gmail.com</a></p>
     </div>
+
+    <!-- Lokasi (Map) -->
+    <div class="footer-map" style="flex: 3; min-width: 300px;">
+      <h3>Lokasi Kami</h3>
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3961.1835440601244!2d109.10518467403472!3d-6.868597267201266!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6fb9e2805c1c1b%3A0xe3e61e1ae59106ff!2sPoliteknik%20Harapan%20Bersama%20Tegal!5e0!3m2!1sid!2sid!4v1748361307832!5m2!1sid!2sid"
+        width="100%" height="300" style="border:0; border-radius: 0.5rem;" allowfullscreen="" loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+
+  </div>
+
+  <div style="margin-top: 20px; padding-top: 10px; border-top: 1px solid var(--text-color); font-size: 0.9rem; color: #aaa;">
+    &copy; 2025 SENJA App. Capstone.
+  </div>
 </footer>
 <!-- Footer Section End -->

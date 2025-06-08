@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Data Pengguna - SENJA APP</title>
+  <link href="https://fonts.googleapis.com/css?family=Poppins:wght@100;300;480;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+    :root {
+      --bg-color: #222327;
+      --text-color: #dbb35c;
+      --main-color: #5C4033;
+      --card-color: #2c2c31;
+    }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 220px;
+      background-color: var(--card-color);
+      padding: 20px;
+      height: 100vh;
+      position: fixed;
+    }
+    .sidebar h2 {
+      color: #fff;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .sidebar a {
+      display: block;
+      color: var(--text-color);
+      padding: 10px 15px;
+      margin-bottom: 10px;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+    .sidebar a:hover {
+      background-color: var(--main-color);
+      color: #fff;
+    }
+    .main-content {
+      margin-left: 220px;
+      padding: 30px;
+      flex: 1;
+    }
+    .main-content h1 {
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .search-box input {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: none;
+      outline: none;
+      width: 250px;
+      background-color: #444;
+      color: #fff;
+    }
+    .search-box input::placeholder {
+      color: #ccc;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: var(--card-color);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 15px;
+      text-align: left;
+      color: #fff;
+    }
+    th {
+      background-color: var(--main-color);
+    }
+    tr:nth-child(even) {
+      background-color: #333;
+    }
+    .btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .btn-edit {
+      background-color: #dbb35c;
+      color: #000;
+    }
+    .btn-delete {
+      background-color: #a21818;
+      color: #fff;
+    }
+    .btn-edit:hover {
+      background-color: #eec77a;
+    }
+    .btn-delete:hover {
+      background-color: #c92a2a;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .action-buttons form {
+      margin: 0;
+    }
+    @media (max-width: 600px) {
+      .search-box input {
+        width: 100%;
+      }
+      .top-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="sidebar">
+  <h2>SENJA APP</h2>
+  <a href="beranda-admin.html">Dashboard</a>
+  <a href="data-pengguna.html">Data Pengguna</a>
+  <a href="data-tari.html">Data Tari</a>
+  <a href="data-informasi-lainnya.html">Data Informasi Lainnya</a>
+  <a href="#" onclick="return confirmLogout()">Keluar</a>
+</div>
+
+<div class="main-content">
+  <h1>Data Pengguna</h1>
+
+  <div class="top-bar">
+    <div class="search-box">
+      <input type="text" id="searchInput" onkeyup="searchUser()" placeholder="Cari berdasarkan nama...">
+    </div>
+    <a href="{{ url_for('tambah_pengguna') }}" class="btn btn-edit">+ Tambah Pengguna</a>
+  </div>
+
+  <table id="userTable">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Nama</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ user.name }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.role }}</td>
+        <td>
+          <div class="action-buttons">
+            <a href="{{ url_for('edit_user', user_id=user['_id']|string) }}" class="btn btn-edit">Edit</a>
+            <form action="{{ url_for('delete_user', user_id=user['_id']|string) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus pengguna ini?');">
+              <button type="submit" class="btn btn-delete">Hapus</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="5">Tidak ada data pengguna</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+    function confirmLogout() {
+        const konfirmasi = confirm("Yakin ingin keluar?");
+        if (konfirmasi) {
+            window.location.href = "/logout-admin"; // ⬅ logout beneran
+        }
+        return false;
+    }
+
+function searchUser() {
+  const input = document.getElementById("searchInput").value.toLowerCase();
+  const rows = document.querySelectorAll("#userTable tbody tr");
+
+  rows.forEach(row => {
+    const nama = row.cells[1].textContent.toLowerCase();
+    row.style.display = nama.includes(input) ? "" : "none";
+  });
+}
+</script>
+</body>
+</html>

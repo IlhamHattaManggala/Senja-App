@@ -317,6 +317,8 @@ def tambah_tari():
 @app.route('/add-informasi-lainnya', methods=['GET', 'POST'])
 def tambah_informasi_lainnya():
     return add_informasi_lainnya()
+
+
 # ---------------------- RUN ----------------------
 if __name__ == '__main__':
     app.run(debug=True, port=5000, host='0.0.0.0', use_reloader=False)

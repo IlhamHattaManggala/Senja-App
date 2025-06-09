@@ -1,7 +1,9 @@
+import os
+import uuid
 from bson import ObjectId
-from flask import redirect, request, session, render_template, url_for
+from flask import current_app, redirect, request, session, render_template, url_for
 from db import mongo
-from config import ConfigClass
+from config import ConfigClass, allowed_file, secure_filename
 from werkzeug.security import generate_password_hash
 
 
@@ -80,14 +82,68 @@ def user_edit(user_id):
 def user_update(user_id):
     name = request.form['name']
     email = request.form['email']
+    avatar_file = request.files.get('avatar')
+    avatar_filename = None
+
+    # Ambil data user lama
+    user = mongo.db[ConfigClass.USER_COLLECTION].find_one({'_id': ObjectId(user_id)})
+    if not user:
+        return "User not found", 404
+
+    old_avatar = user.get('avatar', 'default-icon.png')
+
+    if avatar_file and avatar_file.filename != '' and allowed_file(avatar_file.filename):
+        # Buat nama file baru
+        ext = avatar_file.filename.rsplit('.', 1)[1].lower()
+        safe_name = secure_filename(name.lower().replace(' ', '_'))
+        filename = f"{safe_name}_{uuid.uuid4().hex[:8]}.{ext}"
+
+        # Path folder avatar
+        folder_path = os.path.join(current_app.root_path, 'static', 'img', 'avatar')
+        os.makedirs(folder_path, exist_ok=True)
+
+        # Simpan file baru
+        avatar_path = os.path.join(folder_path, filename)
+        avatar_file.save(avatar_path)
+        avatar_filename = filename
+
+        # Hapus file lama jika bukan default
+        if old_avatar != 'default-icon.png':
+            old_avatar_path = os.path.join(folder_path, old_avatar)
+            if os.path.exists(old_avatar_path):
+                os.remove(old_avatar_path)
+    else:
+        # Tidak upload baru, gunakan foto lama
+        avatar_filename = old_avatar
+
+    # Update ke database
     mongo.db[ConfigClass.USER_COLLECTION].update_one(
         {'_id': ObjectId(user_id)},
-        {'$set': {'name': name, 'email': email}}
+        {'$set': {
+            'name': name,
+            'email': email,
+            'avatar': avatar_filename
+        }}
     )
+
     return redirect(url_for('data_pengguna'))
 
 def user_delete(user_id):
+    # Ambil data user
+    user = mongo.db[ConfigClass.USER_COLLECTION].find_one({'_id': ObjectId(user_id)})
+    if not user:
+        return "User not found", 404
+
+    # Cek dan hapus avatar jika bukan default
+    avatar_filename = user.get('avatar', 'default-icon.png')
+    if avatar_filename != 'default-icon.png':
+        avatar_path = os.path.join(current_app.root_path, 'static', 'img', 'avatar', avatar_filename)
+        if os.path.exists(avatar_path):
+            os.remove(avatar_path)
+
+    # Hapus data user dari database
     mongo.db[ConfigClass.USER_COLLECTION].delete_one({'_id': ObjectId(user_id)})
+
     return redirect(url_for('data_pengguna'))
 
 def add_pengguna():
@@ -96,17 +152,26 @@ def add_pengguna():
         email = request.form['email']
         password = generate_password_hash(request.form['password'])
         role = request.form['role']
-        avatar = request.form['avatar']
+        avatar_file = request.files.get('avatar')
+
+        avatar_filename = 'default-icon.png'
+        if avatar_file and avatar_file.filename != '' and allowed_file(avatar_file.filename):
+            filename = secure_filename(avatar_file.filename)
+            avatar_path = os.path.join('static', 'img', 'avatar', filename)
+            avatar_file.save(os.path.join(current_app.root_path, avatar_path))
+            avatar_filename = filename
 
         user_data = {
             'name': name,
             'email': email,
             'password': password,
             'role': role,
-            'avatar': avatar if avatar else 'default-icon.png'
+            'avatar': avatar_filename
         }
+
         mongo.db[ConfigClass.USER_COLLECTION].insert_one(user_data)
         return redirect(url_for('data_pengguna'))
+
     return render_template('add-pengguna.html')
 
 def add_tari():

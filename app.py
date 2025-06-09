@@ -268,69 +268,85 @@ def logout():
 # Admin Pages (harus login)
 # ======================
 @app.route('/beranda-admin.html')
+@csrf.exempt
 def beranda_admin():
     return admin_beranda()
 
 @app.route('/data-pengguna.html')
+@csrf.exempt
 def data_pengguna():
     return datas()
 
 @app.route('/data-tari.html')
+@csrf.exempt
 def data_tari():
     return tari_data()
 
 @app.route('/data-informasi-lainnya.html')
+@csrf.exempt
 def data_informasi_lainnya():
     return informasi_lainnya()
 
 #INFORMASI LAINNYA ADMIN
 @app.route('/edit-informasi-lainnya/<string:item_id>', methods=['GET'])
+@csrf.exempt
 def edit_informasi_lainnya(item_id):
     return edit_informasi(item_id)
 
 @app.route('/update-informasi-lainnya/<string:item_id>', methods=['POST'])
+@csrf.exempt
 def update_informasi_lainnya(item_id):
     return update_informasi(item_id)
 
 @app.route('/delete-informasi-lainnya/<string:item_id>', methods=['POST'])
+@csrf.exempt
 def delete_informasi_lainnya(item_id):
     return delete_informasi(item_id)
 
 #TARI ADMIN
 @app.route('/edit-tari/<string:tari_id>', methods=['GET'])
+@csrf.exempt
 def edit_tari(tari_id):
     return tari_edit(tari_id)
 
 @app.route('/update-tari/<string:tari_id>', methods=['POST'])
+@csrf.exempt
 def update_tari(tari_id):
     return update_taris(tari_id)
 
 @app.route('/delete-tari/<string:tari_id>', methods=['POST'])
+@csrf.exempt
 def delete_tari(tari_id):
     return delete_taris(tari_id)
 
 #Data user
 @app.route('/edit-user/<string:user_id>', methods=['GET'])
+@csrf.exempt
 def edit_user(user_id):
     return user_edit(user_id)
 
 @app.route('/update-user/<string:user_id>', methods=['POST'])
+@csrf.exempt
 def update_user(user_id):
     return user_update(user_id)
 
 @app.route('/delete-user/<string:user_id>', methods=['POST'])
+@csrf.exempt
 def delete_user(user_id):
     return user_delete(user_id)
 
 @app.route('/add-pengguna', methods=['GET', 'POST'])
+@csrf.exempt
 def tambah_pengguna():
     return add_pengguna()
 
 @app.route('/add-tari', methods=['GET', 'POST'])
+@csrf.exempt
 def tambah_tari():
     return add_tari()
 
 @app.route('/add-informasi-lainnya', methods=['GET', 'POST'])
+@csrf.exempt
 def tambah_informasi_lainnya():
     return add_informasi_lainnya()
 

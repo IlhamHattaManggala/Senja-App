@@ -49,24 +49,19 @@ def buatNotifikasi():
         return jsonify({"message": f"Terjadi kesalahan: {str(e)}"}), 500
 
 
-def getAllNotifikasi():
+def getAllNotifikasi(current_user):
     try:
         client_api_key = request.headers.get('x-api-key')
         if not client_api_key or client_api_key != ConfigClass.API_KEY:
             return jsonify({
                 "status": "Gagal",
                 "message": "API key tidak valid"
-            }), 401
-        user_id = get_jwt_identity()  # Ambil ID dari JWT
-        api_key = request.headers.get('x-api-key')
-    
-        if api_key not in configClass.API_KEY:
-            return jsonify({'pesan': 'API key tidak valid'}), 403
-        user = user_collection.find_one({"_id": ObjectId(user_id)})
-        if not user:
+            }), 403
+        user_id = user_collection.find_one({"_id": current_user["_id"]})
+        if not user_id:
             return jsonify({"status": "error", "message": "User tidak ditemukan"}), 404
 
-        email = user.get("email")
+        email = user_id.get("email")
         if not email:
             return jsonify({"status": "error", "message": "Email tidak ditemukan"}), 400
 
@@ -83,6 +78,7 @@ def getAllNotifikasi():
         }), 200
 
     except Exception as e:
+        print(f"Error: {str(e)}")
         return jsonify({"status": "error", "message": f"Gagal mengambil data notifikasi: {str(e)}"}), 500
 
 def readNotifikasi(notif_id):

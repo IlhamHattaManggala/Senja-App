@@ -65,7 +65,7 @@
 <body>
     <div class="container">
         <h1>Tambah Data Tari</h1>
-        <form method="POST" action="{{ url_for('tambah_tari') }}">
+        <form method="POST" action="{{ url_for('tambah_tari') }}" enctype="multipart/form-data">
             <label for="name">Nama Tari:</label>
             <input type="text" id="name" name="name" required />
 
@@ -83,8 +83,8 @@
             <label for="description">Deskripsi:</label>
             <textarea id="description" name="description" rows="5" required></textarea>
 
-            <label for="imageUrl">URL Gambar Tari:</label>
-            <input type="text" id="imageUrl" name="imageUrl" />
+            <label for="imageUrl">Gambar Tari:</label>
+            <input type="file" id="imageUrl" name="imageUrl" accept="image/*" />
 
             <hr style="margin: 25px 0; border-color: #444;" />
             <h3>Gerakan</h3>
@@ -92,11 +92,11 @@
             <label for="detail_name">Nama Gerakan:</label>
             <input type="text" id="detail_name" name="detail_name" />
 
-            <label for="detail_image">URL Gambar Gerakan:</label>
-            <input type="text" id="detail_image" name="detail_image" />
+            <label for="detail_image">Gambar Gerakan:</label>
+            <input type="file" id="detail_image" name="detail_image" accept="image/*" />
 
-            <label for="detail_video">URL Video Gerakan:</label>
-            <input type="text" id="detail_video" name="detail_video" />
+            <label for="detail_video">Video Gerakan (MP4):</label>
+            <input type="file" id="detail_video" name="detail_video" accept="video/*" />
 
             <button type="submit">Simpan</button>
         </form>

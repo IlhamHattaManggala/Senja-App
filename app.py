@@ -11,6 +11,7 @@ from flask_wtf.csrf import generate_csrf
 
 # Import konfigurasi dan modul database
 from config import UPLOAD_FOLDER, configClass
+from controller.ArtikelController import RequestArtikel
 from db import mongo, init_mongo
 
 # Inisialisasi Flask App
@@ -78,13 +79,13 @@ atexit.register(lambda: scheduler.shutdown())
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # ---------------------- Basic Authentication ----------------------
 
-user_collection = configClass.USER_COLLECTION
-@auth.verify_password
-def verify_password(email, password):
-    user = mongo.db[user_collection].find_one({'email': email})
-    if user and check_password_hash(user['password'], password):
-        return user  # Kembalikan objek user agar bisa diakses di route
-    return None
+# user_collection = configClass.USER_COLLECTION
+# @auth.verify_password
+# def verify_password(email, password):
+#     user = mongo.db[user_collection].find_one({'email': email})
+#     if user and check_password_hash(user['password'], password):
+#         return user  # Kembalikan objek user agar bisa diakses di route
+#     return None
 
 # ---------------------- API Key Middleware ----------------------
 def check_api_key(func):
@@ -152,8 +153,6 @@ def verify_pin():
 def reset_password():
     return RequestResetPassword()
 
-
-
 # ---------------------- BERANDA ----------------------
 @app.route('/api/users/v1/verify-email', methods=['POST'])
 @csrf.exempt
@@ -168,12 +167,19 @@ def verifyEmail(current_user):
 def beranda(current_user):
     return RequestBeranda(current_user)
 
+# ---------------------- ARTIKEL ----------------------
+@app.route('/api/users/v1/berita', methods=['GET'])
+@csrf.exempt
+@token_required
+def artikel(current_user):
+    return RequestArtikel(current_user)
+
 # ------------------------ NOTIFIKASI ---------------------
 @app.route('/api/users/v1/notifikasi', methods=['GET'])
 @csrf.exempt
-@jwt_required()
-def list_notifikasi():
-    return getAllNotifikasi()
+@token_required
+def list_notifikasi(current_user):
+    return getAllNotifikasi(current_user)
 
 @app.route('/api/users/v1/notifikasi/<string:notif_id>/read', methods=['PATCH'])
 @csrf.exempt

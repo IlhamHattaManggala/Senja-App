@@ -179,31 +179,60 @@ def add_tari():
         name = request.form['name']
         asal = request.form['asal']
         level = request.form['level']
-        imageUrl = request.form.get('imageUrl', '')
         description = request.form['description']
-        
-        detail_name = request.form.get('detail_name')
-        detail_image = request.form.get('detail_image')
-        detail_video = request.form.get('detail_video')
 
+        # === Simpan gambar utama tari ===
+        image_file = request.files.get('imageUrl')
+        image_filename = ''
+        if image_file and image_file.filename != '':
+            ext = os.path.splitext(image_file.filename)[1]
+            image_filename = f"{secure_filename(name)}{ext}"
+            image_path = os.path.join(current_app.root_path, 'static', 'img', 'tari', image_filename)
+            image_file.save(image_path)
+
+        # === Simpan gerakan (jika ada) ===
+        detail_name = request.form.get('detail_name')
         gerakan = []
-        if detail_name and detail_image and detail_video:
+        if detail_name:
+            detail_name_clean = secure_filename(detail_name)
+            tari_name_clean = secure_filename(name)
+
+            # Gambar gerakan
+            detail_image_file = request.files.get('detail_image')
+            detail_image_filename = ''
+            if detail_image_file and detail_image_file.filename != '':
+                ext = os.path.splitext(detail_image_file.filename)[1]
+                detail_image_filename = f"{tari_name_clean}_{detail_name_clean}{ext}"
+                detail_image_path = os.path.join(current_app.root_path, 'static', 'img', 'gerakan', detail_image_filename)
+                detail_image_file.save(detail_image_path)
+
+            # Video gerakan
+            detail_video_file = request.files.get('detail_video')
+            detail_video_filename = ''
+            if detail_video_file and detail_video_file.filename != '':
+                ext = os.path.splitext(detail_video_file.filename)[1]
+                detail_video_filename = f"{tari_name_clean}_{detail_name_clean}{ext}"
+                detail_video_path = os.path.join(current_app.root_path, 'static', 'vidio', detail_video_filename)
+                detail_video_file.save(detail_video_path)
+
             gerakan.append({
                 'name': detail_name,
-                'imageUrl': detail_image,
-                'videoUrl': detail_video,
-                'skor': ''
+                'imageUrl': detail_image_filename,
+                'videoUrl': detail_video_filename
             })
 
+        # Simpan ke MongoDB
         mongo.db[ConfigClass.TARI_COLLECTION].insert_one({
             'name': name,
             'asal': asal,
             'level': level,
-            'imageUrl': imageUrl,
+            'imageUrl': image_filename,
             'description': description,
             'gerakan': gerakan
         })
+
         return redirect(url_for('data_tari'))
+
     return render_template('add-tari.html')
 
 def add_informasi_lainnya():

@@ -1,3 +1,4 @@
+from bson import ObjectId
 from flask import jsonify, request
 from db import mongo
 from config import ConfigClass
@@ -23,7 +24,7 @@ def RequestVerifyEmail(current_user):
     user_id = str(current_user['_id'])  # user_id sebagai string
     
     # Cari data verifikasi di verify_collection
-    verify_entry = verify_collection.find_one({'user_id': user_id})
+    verify_entry = verify_collection.find_one({'user_id': ObjectId(user_id)})
     
     if not verify_entry:
         return jsonify({

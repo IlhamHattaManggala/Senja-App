@@ -23,10 +23,14 @@ def simpan_log(user_id, email, aktivitas):
 # ==================== FUNGSI GET LOG PER USER ====================
 def get_log_by_user(current_user):
     user_id = str(current_user['_id'])
+    print(f"[LOG] Mengambil log aktivitas untuk user_id: {user_id}")
+    if not user_id:
+        return jsonify({'status': 'gagal', 'pesan': 'User ID tidak ditemukan'}), 400
 
     try:
         logs = log_collection.find({'user_id': user_id}).sort('waktu', -1)
-
+        jumlah_log = log_collection.count_documents({'user_id': user_id})
+        print(f"[LOG] Ditemukan {jumlah_log} log aktivitas untuk user_id: {user_id}")
         result = []
         for log in logs:
             raw_waktu = log.get('waktu')
@@ -45,9 +49,13 @@ def get_log_by_user(current_user):
                 waktu_str = "-"  # jika None atau tipe tidak dikenali
 
             result.append({
+                'id': str(log['_id']),
+                'user_id': str(log.get('user_id', '')),
+                'email': log.get('email', ''),
                 'aktivitas': log.get('aktivitas', ''),
                 'waktu': waktu_str
             })
+        print(f"[LOG] Log aktivitas berhasil diambil untuk user_id: {user_id} dengan {len(result)} entri")
 
         return jsonify({
             'status': 'sukses',

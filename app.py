@@ -55,7 +55,7 @@ from controller.AdminController.AdminBerandaController import admin_beranda
 from controller.AdminController.AdminLoginController import admin_check_login, admin_login, admin_logout
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
-from controller.LogActivityController import simpan_log
+from controller.LogActivityController import get_log_by_user
 from controller.AdminController.RegisterAdminController import registerAdmin
 import atexit
 
@@ -374,7 +374,7 @@ def log_aktivitas_admin():
 @csrf.exempt
 @token_required
 def get_log_aktivitas(current_user):
-    from controller.LogActivityController import get_log_by_user
+    print(f"[LOG] Mengambil log aktivitas untuk user: {current_user['email']}")
     return get_log_by_user(current_user)
 
 # ---------------------- RUN ----------------------

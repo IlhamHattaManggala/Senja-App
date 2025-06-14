@@ -55,6 +55,8 @@ from controller.AdminController.AdminBerandaController import admin_beranda
 from controller.AdminController.AdminLoginController import admin_check_login, admin_login, admin_logout
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
+from controller.LogActivityController import simpan_log
+from controller.AdminController.RegisterAdminController import registerAdmin
 import atexit
 
 # Middleware untuk validasi token
@@ -256,6 +258,11 @@ def home():
 def login_admin():
     return admin_login()
 
+@app.route('/api/admin/v1/register', methods=['POST'])
+@csrf.exempt
+def admin_register():
+    return registerAdmin()
+
 # ======================
 # HTML Login Page
 # ======================
@@ -356,6 +363,19 @@ def tambah_tari():
 def tambah_informasi_lainnya():
     return add_informasi_lainnya()
 
+# ---------------------- ROUTE: Log Aktivitas ----------------------
+@app.route('/log-aktivitas.html')
+def log_aktivitas_admin():
+    logs = list(mongo.db[configClass.LOG_ACTIVITY_COLLECTION].find().sort("waktu", -1))
+    return render_template('log-aktivitas.html', logs=logs)
+
+# ---------------------- ROUTE: GET LOG USER ----------------------
+@app.route('/api/users/v1/log-aktivitas', methods=['GET'])
+@csrf.exempt
+@token_required
+def get_log_aktivitas(current_user):
+    from controller.LogActivityController import get_log_by_user
+    return get_log_by_user(current_user)
 
 # ---------------------- RUN ----------------------
 if __name__ == '__main__':

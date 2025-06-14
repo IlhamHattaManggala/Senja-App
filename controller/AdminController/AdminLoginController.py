@@ -4,6 +4,7 @@ from db import mongo
 from config import ConfigClass
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_wtf.csrf import generate_csrf
+from controller.LogActivityController import simpan_log
 
 def admin_login():
     data = request.get_json()
@@ -30,6 +31,7 @@ def admin_login():
     if user and user.get('role') == 'admin' and check_password_hash(user['password'], password):
         session['admin'] = str(user['_id'])  # Login berhasil → simpan session
         session['login_attempts'][ip] = {"count": 0, "last_attempt": now.isoformat()}  # reset count
+        simpan_log(str(user['_id']), user['email'], "Login sebagai admin")
         return jsonify({'pesan': 'Login berhasil!', 'data': {'token': 'session'}})
     else:
         # Gagal login → tambah counter

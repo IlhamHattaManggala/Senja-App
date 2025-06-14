@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Dashboard Admin - SENJA APP</title>
+    <title>Log Aktivitas - SENJA APP</title>
     <link href="https://fonts.googleapis.com/css?family=Poppins:wght@100;300;480;700&display=swap" rel="stylesheet" />
     <style>
         * {
@@ -58,25 +58,25 @@
             font-size: 24px;
         }
 
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .filter-bar {
             margin-bottom: 20px;
-            gap: 10px;
+            display: flex;
             flex-wrap: wrap;
+            gap: 10px;
         }
-        .search-box input {
-            padding: 8px 12px;
-            border-radius: 6px;
+
+        .filter-bar input[type="text"],
+        .filter-bar input[type="date"],
+        .filter-bar button {
+            padding: 10px;
+            border-radius: 5px;
             border: none;
-            outline: none;
-            width: 250px;
-            background-color: #444;
-            color: #fff;
         }
-        .search-box input::placeholder {
-            color: #ccc;
+
+        .filter-bar button {
+            background-color: var(--main-color);
+            color: white;
+            cursor: pointer;
         }
 
         table {
@@ -86,60 +86,29 @@
             border-radius: 10px;
             overflow: hidden;
         }
+
         th, td {
             padding: 15px;
             text-align: left;
             color: #fff;
             vertical-align: top;
-            white-space: normal;
             word-wrap: break-word;
-            max-width: 200px;
         }
+
         th {
             background-color: var(--main-color);
         }
+
         tr:nth-child(even) {
             background-color: #333;
         }
 
-        .btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-        .btn-edit {
-            background-color: #dbb35c;
-            color: #000;
-        }
-        .btn-delete {
-            background-color: #a21818;
-            color: #fff;
-        }
-        .btn-edit:hover {
-            background-color: #eec77a;
-        }
-        .btn-delete:hover {
-            background-color: #c92a2a;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .action-buttons form {
-            margin: 0;
-        }
-
         @media (max-width: 600px) {
-            .search-box input {
-                width: 100%;
+            .main-content {
+                padding: 20px;
             }
-            .top-bar {
+            .filter-bar {
                 flex-direction: column;
-                align-items: stretch;
             }
         }
     </style>
@@ -150,52 +119,40 @@
     <a href="beranda-admin.html">Dashboard</a>
     <a href="data-pengguna.html">Data Pengguna</a>
     <a href="data-tari.html">Data Tari</a>
-    <a href="data-informasi-lainnya.html">Data informasi Lainnya</a>
+    <a href="data-informasi-lainnya.html">Data Informasi Lainnya</a>
     <a href="log-aktivitas.html">Log Aktivitas</a>
     <a href="#" onclick="return confirmLogout()">Keluar</a>
 </div>
 
 <div class="main-content">
-    <h1>Daftar Tari</h1>
+    <h1>Log Aktivitas User</h1>
 
-    <div class="top-bar">
-        <div class="search-box">
-            <input type="text" id="searchTariInput" onkeyup="searchTari()" placeholder="Cari nama atau asal tari...">
-        </div>
-        <a href="{{ url_for('tambah_tari') }}" class="btn btn-edit">+ Tambah Tari</a>
+    <div class="filter-bar">
+        <input type="text" id="searchInput" placeholder="Cari email / aktivitas...">
+        <input type="date" id="filterDate">
+        <button onclick="refreshTable()">🔄 Refresh</button>
     </div>
 
-    <table id="tariTable">
+    <table id="logTable">
         <thead>
             <tr>
                 <th>No</th>
-                <th>Nama Tari</th>
-                <th>Level</th>
-                <th>Asal</th>
-                <th>Deskripsi</th>
-                <th>Aksi</th>
+                <th>Email</th>
+                <th>Aktivitas</th>
+                <th>Waktu</th>
             </tr>
         </thead>
         <tbody>
-            {% for tari in tari_list %}
+            {% for log in logs %}
             <tr>
                 <td>{{ loop.index }}</td>
-                <td>{{ tari.name }}</td>
-                <td>{{ tari.level }}</td>
-                <td>{{ tari.asal }}</td>
-                <td>{{ tari.description }}</td>
-                <td>
-                    <div class="action-buttons">
-                        <a href="{{ url_for('edit_tari', tari_id=tari._id) }}" class="btn btn-edit">Edit</a>
-                        <form action="{{ url_for('delete_tari', tari_id=tari._id) }}" method="POST">
-                            <button type="submit" class="btn btn-delete" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">Hapus</button>
-                        </form>
-                    </div>
-                </td>
+                <td>{{ log.email }}</td>
+                <td>{{ log.aktivitas }}</td>
+                <td>{{ log.waktu }}</td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="6">Tidak ada data tari</td>
+                <td colspan="4">Belum ada aktivitas tercatat</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -206,21 +163,46 @@
     function confirmLogout() {
         const konfirmasi = confirm("Yakin ingin keluar?");
         if (konfirmasi) {
-            window.location.href = "/logout-admin"; // ⬅ logout beneran
+            window.location.href = "/logout-admin";
         }
         return false;
     }
 
-function searchTari() {
-    const input = document.getElementById("searchTariInput").value.toLowerCase();
-    const rows = document.querySelectorAll("#tariTable tbody tr");
+    function refreshTable() {
+        document.getElementById("searchInput").value = "";
+        document.getElementById("filterDate").value = "";
 
-    rows.forEach(row => {
-        const nama = row.cells[1].textContent.toLowerCase();
-        const asal = row.cells[3].textContent.toLowerCase();
-        row.style.display = (nama.includes(input) || asal.includes(input)) ? "" : "none";
-    });
-}
+        const rows = document.querySelectorAll("tbody tr");
+        rows.forEach(row => row.style.display = "");
+    }
+
+    document.getElementById('searchInput').addEventListener('keyup', filterLogs);
+    document.getElementById('filterDate').addEventListener('change', filterLogs);
+
+    function filterLogs() {
+        const searchValue = document.getElementById('searchInput').value.toLowerCase();
+        const selectedDate = document.getElementById('filterDate').value;
+
+        const rows = document.querySelectorAll("tbody tr");
+
+        rows.forEach(row => {
+            const email = row.children[1]?.textContent.toLowerCase();
+            const aktivitas = row.children[2]?.textContent.toLowerCase();
+            const waktuText = row.children[3]?.textContent;
+
+            const waktu = new Date(waktuText);
+            const logDate = waktu.toISOString().slice(0, 10); // YYYY-MM-DD
+
+            const matchSearch = email.includes(searchValue) || aktivitas.includes(searchValue);
+            const matchDate = selectedDate ? logDate === selectedDate : true;
+
+            if (matchSearch && matchDate) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
 </script>
 </body>
 </html>

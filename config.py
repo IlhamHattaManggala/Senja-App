@@ -17,6 +17,7 @@ class ConfigClass:
     SENI_LAINNYA_COLLECTION = "seni_lainnya"
     TARI_ARTICLE_COLLECTION = "tari_article"
     VERIFY_EMAIL_COLLECTION = "verify_email"
+    LOG_ACTIVITY_COLLECTION = "log_activity"
 
     JWT_SECRET_KEY = os.getenv("SECRET_KEY")
     JWT_TOKEN_LOCATION = ['headers']
@@ -28,7 +29,7 @@ class ConfigClass:
     MAIL_USE_TLS = True
     MAIL_USERNAME = os.getenv("MAIL_USERNAME")
     MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
-    MAIL_DEFAULT_SENDER = 'senjaapp@gmail.com'
+    MAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER")
 
     BASIC_AUTH_USERS = {
         os.getenv("MAIL_USERNAME"): os.getenv("MAIL_PASSWORD")

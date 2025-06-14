@@ -1,148 +1,198 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login Admin - SENJA APP</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
-    <meta name="csrf-token" content="{{ csrf_token }}">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="csrf-token" content="{{ csrf_token }}" />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
 
-        :root {
-            --bg-color: #222327;
-            --text-color: #dbb35c;
-            --main-color: #5C4033;
-        }
+      :root {
+        --bg-color: #222327;
+        --text-color: #dbb35c;
+        --main-color: #5c4033;
+      }
 
-        body {
-            background-color: var(--bg-color);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: var(--text-color);
-        }
+      body {
+        background-color: var(--bg-color);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--text-color);
+      }
 
-        .login-container {
-            background: #2c2c31;
-            padding: 40px;
-            border-radius: 15px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.3);
-        }
+      .login-container {
+        background: #2c2c31;
+        padding: 40px;
+        border-radius: 15px;
+        width: 100%;
+        max-width: 400px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        text-align: center;
+      }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 25px;
-        }
+      h2 {
+        margin-bottom: 25px;
+      }
 
-        label {
-            font-weight: 500;
-            display: block;
-            margin-bottom: 6px;
-        }
+      label {
+        font-weight: 500;
+        display: block;
+        margin-bottom: 6px;
+      }
 
-        input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 18px;
-            background: #444;
-            border: none;
-            border-radius: 10px;
-            color: #fff;
-        }
+      input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 18px;
+        background: #444;
+        border: none;
+        border-radius: 10px;
+        color: #fff;
+        font-size: 1rem;
+      }
 
-        input::placeholder {
-            color: #bbb;
-        }
+      input::placeholder {
+        color: #bbb;
+      }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            background: var(--main-color);
-            border: none;
-            border-radius: 10px;
-            color: #fff;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
+      button {
+        width: 100%;
+        padding: 12px;
+        background: var(--main-color);
+        border: none;
+        border-radius: 10px;
+        color: #fff;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
 
-        button:hover {
-            background: #7a5a4a;
-        }
+      button:hover {
+        background: #7a5a4a;
+      }
 
-        .notif {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 0.9rem;
-            color: red;
-            display: none;
-        }
+      .notif {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 0.9rem;
+        color: red;
+        display: none;
+      }
+      /* Tombol kembali flat, center */
+      #backButton {
+        margin-top: 15px;
+        background: transparent;
+        border: none;
+        color: var(--text-color);
+        font-weight: 400;
+        font-size: 1rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 10px;
+        padding: 8px 20px;
+        transition: background 0.3s ease, color 0.3s ease;
+        user-select: none;
+        justify-content: flex-start;
+        width: auto;
+      }
+
+      #backButton:hover,
+      #backButton:focus {
+        background: var(--main-color);
+        color: #fff;
+        outline: none;
+      }
+
+      #backButton::before {
+        content: "←";
+        font-weight: 700;
+        font-size: 1.2rem;
+        display: inline-block;
+      }
     </style>
-</head>
-<body>
-
-<div class="login-container">
-    <h2>Masuk ke Admin</h2>
-    <form id="adminLoginForm">
+  </head>
+  <body>
+    <div class="login-container">
+      <h2>Masuk ke Admin</h2>
+      <form id="adminLoginForm">
         <label for="email">Email</label>
-        <input type="email" id="email" placeholder="Masukkan email" required>
+        <input type="email" id="email" placeholder="Masukkan email" required />
         <label for="password">Kata Sandi</label>
-        <input type="password" id="password" placeholder="Masukkan kata sandi" required>
+        <input
+          type="password"
+          id="password"
+          placeholder="Masukkan kata sandi"
+          required
+        />
         <button type="submit" id="loginButton">Login</button>
-        <div class="notif" id="notif">Email atau password salah</div>
-    </form>
-</div>
+      </form>
+      <button type="button" id="backButton">Kembali ke Beranda</button>
+      <div class="notif" id="notif">Email atau password salah</div>
+    </div>
 
-<script>
-document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
+    <script>
+      document
+        .getElementById("adminLoginForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
 
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
-    const notif = document.getElementById('notif');
-    const button = document.getElementById('loginButton');
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+          const email = document.getElementById("email").value.trim();
+          const password = document.getElementById("password").value.trim();
+          const notif = document.getElementById("notif");
+          const button = document.getElementById("loginButton");
+          const csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            .getAttribute("content");
 
-    button.disabled = true;
+          button.disabled = true;
 
-    try {
-        const response = await fetch('/api/admin/v1/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken  // Tambahkan CSRF token di header!
-            },
-            body: JSON.stringify({ email, password })
+          try {
+            const response = await fetch("/api/admin/v1/login", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken, // Tambahkan CSRF token di header!
+              },
+              body: JSON.stringify({ email, password }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+              sessionStorage.setItem("admin_login", "true");
+              window.location.href = "/beranda-admin.html";
+            } else {
+              notif.textContent = result.pesan || "Login gagal!";
+              notif.style.display = "block";
+            }
+          } catch (err) {
+            notif.textContent = "Terjadi kesalahan. Coba lagi.";
+            notif.style.display = "block";
+            console.error(err);
+          }
+
+          button.disabled = false;
         });
 
-        const result = await response.json();
-
-        if (response.ok) {
-            sessionStorage.setItem('admin_login', 'true');
-            window.location.href = '/beranda-admin.html';
-        } else {
-            notif.textContent = result.pesan || 'Login gagal!';
-            notif.style.display = 'block';
-        }
-
-    } catch (err) {
-        notif.textContent = 'Terjadi kesalahan. Coba lagi.';
-        notif.style.display = 'block';
-        console.error(err);
-    }
-
-    button.disabled = false;
-});
-</script>
-
-</body>
+      document
+        .getElementById("backButton")
+        .addEventListener("click", function () {
+          window.location.href = "/";
+        });
+    </script>
+  </body>
 </html>

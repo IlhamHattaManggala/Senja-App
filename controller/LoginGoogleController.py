@@ -13,6 +13,7 @@ from config import ConfigClass
 from db import mongo
 from firebase.firebase_service import FirebaseService
 from mail.sendVerifyAkun import send_verify_email
+from controller.LogActivityController import simpan_log  
 
 mail = Mail()
 
@@ -82,6 +83,8 @@ def LoginGoogle():
             identity=str(user_id),
             expires_delta=timedelta(days=1)
         )
+        
+        simpan_log(str(user_id), email, "Login dengan Google dari aplikasi mobile")
 
         return jsonify({
             'status': 'success',
@@ -196,7 +199,8 @@ def registerGoogle():
             identity=str(user_id),
             expires_delta=timedelta(days=1)
         )
-
+        simpan_log(str(user_id), email, "Registrasi dengan Google dari aplikasi mobile")
+        
         return jsonify({
             'status': 'success',
             'message': 'Registrasi berhasil',

@@ -4,6 +4,7 @@ from werkzeug.security import check_password_hash
 from db import mongo
 from config import configClass
 from datetime import timedelta
+from controller.LogActivityController import simpan_log
 
 user_collection = mongo.db[configClass.USER_COLLECTION]
 verify_collection = mongo.db[configClass.VERIFY_EMAIL_COLLECTION]
@@ -40,7 +41,9 @@ def RequestLogin():
         identity=user_id,
         expires_delta=timedelta(days=1)
     )
-
+    # Simpan log aktivitas
+    simpan_log(user_id, user['email'], "Login ke aplikasi")
+    
     return jsonify({
         'status': 'sukses',
         'pesan': 'Login berhasil',

@@ -1,4 +1,5 @@
 from datetime import date
+from controller.LogActivityController import simpan_log
 from db import mongo
 from flask import jsonify, request
 
@@ -43,6 +44,7 @@ def add_riwayat(current_user):
     }
 
     result = mongo.db.riwayat.insert_one(riwayat)
+    simpan_log(str(current_user['_id']), current_user['email'], f"Menambahkan riwayat latihan {tari_name} dengan skor {score}")
 
     return jsonify({
         'status': 'sukses',

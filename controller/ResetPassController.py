@@ -4,6 +4,7 @@ from config import ConfigClass
 from datetime import datetime
 import hashlib
 from bson import ObjectId
+from controller.LogActivityController import simpan_log
 
 def RequestResetPassword():
     data = request.json
@@ -44,7 +45,7 @@ def RequestResetPassword():
 
         # Hapus entri OTP setelah digunakan
         resetPass_collection.delete_one({'token': otp})
-
+        simpan_log(str(user['_id']), user['email'], "Password berhasil direset")
         return jsonify({'success': True, 'message': 'Password berhasil direset!'}), 200
 
     except Exception as e:

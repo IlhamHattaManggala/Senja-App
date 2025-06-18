@@ -1,10 +1,17 @@
 from datetime import date
+from config import ConfigClass
 from controller.LogActivityController import simpan_log
 from db import mongo
 from flask import jsonify, request
 
 def RequestRiwayat(current_user):
     # Mengambil seluruh riwayat latihan dari pengguna yang login
+    client_api_key = request.headers.get('x-api-key')
+    if not client_api_key or client_api_key != ConfigClass.API_KEY:
+        return jsonify({
+            "status": "Gagal",
+            "message": "API key tidak valid"
+        }), 401
     
     riwayat_data = mongo.db.riwayat.find({'user_id': current_user['_id']})  
 
@@ -15,6 +22,7 @@ def RequestRiwayat(current_user):
             "id": str(riwayat['_id']),
             "date": riwayat['date'],
             "tari_name": riwayat['tari_name'],
+            "gerakan_name": riwayat['gerakan_name'],
             "score": riwayat['score']  # Menampilkan skor gabungan
         })
 
@@ -29,10 +37,18 @@ def RequestRiwayat(current_user):
 def add_riwayat(current_user):
     data = request.get_json()
     date = data.get('date')  
-    tari_name = data.get('tari_name') 
+    tari_name = data.get('tari_name')
+    gerakan_name = data.get('gerakan_name') 
     score = data.get('score')
     
-    if not date or not tari_name or score is None:
+    client_api_key = request.headers.get('x-api-key')
+    if not client_api_key or client_api_key != ConfigClass.API_KEY:
+        return jsonify({
+            "status": "Gagal",
+            "message": "API key tidak valid"
+        }), 401
+    
+    if not date or not tari_name or not gerakan_name or score is None:
         return jsonify({'status': 'gagal', 'pesan': 'Semua field wajib diisi'}), 400
 
     # Menyimpan data riwayat ke MongoDB
@@ -40,6 +56,7 @@ def add_riwayat(current_user):
         'user_id': current_user['_id'],  # ID pengguna yang sedang login
         'date': date,
         'tari_name': tari_name,
+        'gerakan_name': gerakan_name,
         'score': score  # Menyimpan skor gabungan
     }
 
@@ -53,6 +70,7 @@ def add_riwayat(current_user):
             'id': str(result.inserted_id),
             'date': date,
             'tari_name': tari_name,
+            'gerakan_name': gerakan_name,
             'score': score
         }
     }), 201

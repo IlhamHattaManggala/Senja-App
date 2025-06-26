@@ -18,11 +18,12 @@ def RequestRiwayat(current_user):
     riwayat_list = []
 
     for riwayat in riwayat_data:
+        gerakan_name = riwayat.get('gerakan_name', 'Tidak ada')
         riwayat_list.append({
             "id": str(riwayat['_id']),
             "date": riwayat['date'],
             "tari_name": riwayat['tari_name'],
-            "gerakan_name": riwayat['gerakan_name'],
+            "gerakan_name": gerakan_name,
             "score": riwayat['score']  # Menampilkan skor gabungan
         })
 

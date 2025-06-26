@@ -29,6 +29,7 @@ def RequestBeranda(current_user):
                 "name": gerakan['name'],
                 "imageUrl": image_url,
                 "videoUrl": video_url,
+                "previewVideo": gerakan['videoUrl']
             })
 
         image_url_tari = f"{base_url}/tari/{tari['imageUrl']}" if 'imageUrl' in tari else None

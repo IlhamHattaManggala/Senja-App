@@ -21,10 +21,11 @@ def RequestVerifyEmail(current_user):
         return jsonify({'message': 'OTP harus diisi!'}), 400
     
     verify_collection = mongo.db[ConfigClass.VERIFY_EMAIL_COLLECTION]
-    user_id = str(current_user['_id'])  # user_id sebagai string
+    user_id = str(current_user['_id'])
+    print(user_id) # user_id sebagai string
     
     # Cari data verifikasi di verify_collection
-    verify_entry = verify_collection.find_one({'user_id': ObjectId(user_id)})
+    verify_entry = verify_collection.find_one({'user_id': str(ObjectId(user_id))})
     
     if not verify_entry:
         return jsonify({

@@ -1,8 +1,11 @@
-from datetime import date
+from datetime import datetime
 from config import ConfigClass
 from controller.LogActivityController import simpan_log
 from db import mongo
 from flask import jsonify, request
+from firebase.firebase_service import FirebaseService
+
+notifikasi_collection = mongo.db[ConfigClass.NOTIFIKASI_COLLECTION]
 
 def RequestRiwayat(current_user):
     # Mengambil seluruh riwayat latihan dari pengguna yang login
@@ -60,9 +63,29 @@ def add_riwayat(current_user):
         'gerakan_name': gerakan_name,
         'score': score  # Menyimpan skor gabungan
     }
-
+    current_time = datetime.utcnow()
     result = mongo.db.riwayat.insert_one(riwayat)
     simpan_log(str(current_user['_id']), current_user['email'], f"Menambahkan riwayat latihan {tari_name} dengan skor {score}")
+    # Kirim notifikasi via Firebase
+    FirebaseService.send_notification(
+        title="Selamat anda sudah menyelesaikan latihan",
+        body=f"Selamat anda sudah menyelesaikan latihan dengan {score} untuk {tari_name} {gerakan_name}",
+        topic=f"latihan {tari_name} {gerakan_name}",
+        data={
+            "isRead": "false",
+            "time": current_time.strftime("%Y-%m-%d %H:%M:%S"),
+        }
+    )
+
+        # Simpan notifikasi ke database
+    notifikasi_collection.insert_one({
+        'email': current_user['email'],
+        'title': 'Selamat anda sudah menyelesaikan latihan',
+        'body': f'Selamat anda sudah menyelesaikan latihan dengan {score} untuk {tari_name} {gerakan_name}',
+        'topic': f"latihan {tari_name} {gerakan_name}",
+        'isRead': False,
+        'time': current_time
+    })
 
     return jsonify({
         'status': 'sukses',

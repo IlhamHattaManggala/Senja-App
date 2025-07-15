@@ -1,5 +1,7 @@
-flask
-flask_sqlalchemy
-flask_cors
-flask_bcrypt
-python-dotenv
+Flask==3.1.1
+flask-cors==6.0.1
+Flask-HTTPAuth==4.8.0
+Flask-JWT-Extended==4.7.1
+Flask-Mail==0.10.0
+Flask-PyMongo==3.0.1
+Flask-WTF==1.2.2

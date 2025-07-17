@@ -70,7 +70,7 @@ def add_riwayat(current_user):
     FirebaseService.send_notification(
         title="Selamat anda sudah menyelesaikan latihan",
         body=f"Selamat anda sudah menyelesaikan latihan dengan {score} untuk {tari_name} {gerakan_name}",
-        topic=f"latihan {tari_name} {gerakan_name}",
+        topic=f"notif_user_{str(current_user['_id'])}",
         data={
             "isRead": "false",
             "time": current_time.strftime("%Y-%m-%d %H:%M:%S"),
@@ -82,7 +82,7 @@ def add_riwayat(current_user):
         'email': current_user['email'],
         'title': 'Selamat anda sudah menyelesaikan latihan',
         'body': f'Selamat anda sudah menyelesaikan latihan dengan {score} untuk {tari_name} {gerakan_name}',
-        'topic': f"latihan {tari_name} {gerakan_name}",
+        'topic': f"notif_user_{str(current_user['_id'])}",
         'isRead': False,
         'time': current_time
     })

@@ -81,30 +81,30 @@ def RequestRegister():
         # Kirim email OTP
         send_verify_email(email, otp)
 
-        # Kirim notifikasi via Firebase
-        FirebaseService.send_notification(
-            title="Terima kasih telah mendaftar",
-            body="Selamat datang di aplikasi kami!, kami senang Anda bergabung. Selamat menggunakan aplikasi kami!",
-            topic="user_baru",
-            data={
-                "isRead": "false",
-                "time": current_time.strftime("%Y-%m-%d %H:%M:%S"),
-            }
-        )
+        # # Kirim notifikasi via Firebase
+        # FirebaseService.send_notification(
+        #     title="Terima kasih telah mendaftar",
+        #     body="Selamat datang di aplikasi kami!, kami senang Anda bergabung. Selamat menggunakan aplikasi kami!",
+        #     topic=f"notif_user_{str(user_id)}",
+        #     data={
+        #         "isRead": "false",
+        #         "time": current_time.strftime("%Y-%m-%d %H:%M:%S"),
+        #     }
+        # )
 
-        # Simpan notifikasi ke database
-        notifikasi_collection.insert_one({
-            'email': email,
-            'title': 'Terima kasih telah mendaftar',
-            'body': 'Selamat datang di aplikasi kami!, kami senang Anda bergabung. Selamat menggunakan aplikasi kami!',
-            'topic': "user_baru",
-            'isRead': False,
-            'time': current_time
-        })
+        # # Simpan notifikasi ke database
+        # notifikasi_collection.insert_one({
+        #     'email': email,
+        #     'title': 'Terima kasih telah mendaftar',
+        #     'body': 'Selamat datang di aplikasi kami!, kami senang Anda bergabung. Selamat menggunakan aplikasi kami!',
+        #     'topic': f"notif_user_{str(user_id)}",
+        #     'isRead': False,
+        #     'time': current_time
+        # })
 
         # Buat access token (hanya menyimpan _id sebagai identity)
         access_token = create_access_token(
-            identity=user_id,
+            identity=str(user_id),
             expires_delta=timedelta(days=1)
         )
 
@@ -113,7 +113,7 @@ def RequestRegister():
             'pesan': 'Registrasi berhasil, silakan cek email anda untuk verifikasi!',
             'data': {
                 'user': {
-                    'id': user_id,
+                    'id': str(user_id),
                     'name': name,
                     'email': email,
                     'role': 'user',

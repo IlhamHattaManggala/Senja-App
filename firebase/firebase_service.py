@@ -27,7 +27,7 @@ class FirebaseService:
         return credentials_obj.token
 
     @staticmethod
-    def send_notification(title, body, topic="user_baru", data=None):
+    def send_notification(title, body, topic=None, data=None):
         access_token = FirebaseService.get_access_token()
         headers = {
             'Authorization': f'Bearer {access_token}',

@@ -26,7 +26,7 @@ def RequestLogin():
     if not user or not check_password_hash(user['password'], password):
         return jsonify({'pesan': 'Email atau password salah'}), 401
 
-    user_id = str(user['_id'])
+    user_id = user['_id']
 
     # Cek apakah user sudah verifikasi email
     verify_entry = verify_collection.find_one({'user_id': user_id})
@@ -38,18 +38,18 @@ def RequestLogin():
 
     # Jika sudah verifikasi, buat token
     access_token = create_access_token(
-        identity=user_id,
+        identity=str(user_id),
         expires_delta=timedelta(days=1)
     )
     # Simpan log aktivitas
-    simpan_log(user_id, user['email'], "Login ke aplikasi")
+    simpan_log(str(user_id), user['email'], "Login ke aplikasi")
     
     return jsonify({
         'status': 'sukses',
         'pesan': 'Login berhasil',
         'data': {
             'user': {
-                'id': user_id,
+                'id': str(user_id),
                 'name': user['name'],
                 'email': user['email'],
                 'role': user['role'],
